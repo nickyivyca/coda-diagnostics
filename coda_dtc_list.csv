@@ -323,13 +323,13 @@ DLCM,U3006,Self Power Enable relay circuit
 Gateway,B1101,Battery voltage high
 Gateway,B1102,Battery voltage low
 Gateway,B2019,DCDC: DTC 14 - Heat Plate Temperature Fault
-Gateway,B2100,DCDC: DTC 8 - Buck On Voltage Fault – Low
-Gateway,B2101,DCDC: DTC 2 - High Voltage Fault – High
-Gateway,B2102,DCDC: DTC 3 - High Voltage Fault – Low
+Gateway,B2100,DCDC: DTC 8 - Buck On Voltage Fault - Low
+Gateway,B2101,DCDC: DTC 2 - High Voltage Fault - High
+Gateway,B2102,DCDC: DTC 3 - High Voltage Fault - Low
 Gateway,B2104,DCDC: DTC 9 - UNUSED
 Gateway,B2105,DCDC: DTC 10 - UNUSED
 Gateway,B2106,DCDC: DTC 11 - UNUSED
-Gateway,B2107,DCDC: DTC 12 - Boost On Hi Voltage Fault – Low
+Gateway,B2107,DCDC: DTC 12 - Boost On Hi Voltage Fault - Low
 Gateway,B2108,DCDC: DTC 13 - Loss of COM (3 Second Timeout) Low
 Gateway,B210A,DCDC: DTC 15 - 14V Current Diagnostic
 Gateway,B210B,DCDC: DTC 16 - Current Balance Diagnostic
@@ -337,8 +337,8 @@ Gateway,B210C,DCDC: DTC 17 - 14V ILIM Diagnostic
 Gateway,B210D,DCDC: DTC 18 - ILIM Occurred Indication
 Gateway,B210E,DCDC: DTC 19 - UNUSED
 Gateway,B210F,DCDC: DTC 20 - UNUSED
-Gateway,B2111,DCDC: DTC 6 - Low Voltage Fault – High
-Gateway,B2112,DCDC: DTC 7 - Low Voltage Fault – Low
+Gateway,B2111,DCDC: DTC 6 - Low Voltage Fault - High
+Gateway,B2112,DCDC: DTC 7 - Low Voltage Fault - Low
 Gateway,B2114,DCDC: DTC 21 - UNUSED
 Gateway,B2115,DCDC: DTC 22 - UNUSED
 Gateway,B2116,DCDC: DTC 23 - UNUSED
