@@ -396,9 +396,107 @@ RCU,NOT USED,Wheel 6 battery alert OR Wheel 5 battery alert OR Wheel 2 battery a
 RCU,RCU FAULT,RCU Fault (RF Only)
 RCU,RIGHT FRONT,Wheel 3 battery alert OR Wheel 3 fault alert OR Wheel 3 dead sensor
 RCU,RIGHT REAR,Wheel 7 battery alert OR Wheel 7 fault alert OR Wheel 7 dead sensor
-Airbag,B1382,Passenger side airbag squib circuit High Resistance
-Airbag,B2505,Passenger Airbag Deactivate (PAD) Warning Lamp Circuit Failure
+Airbag,B1101,Battery voltage high
 Airbag,B1102,Battery voltage low
+Airbag,B1332,OC Defect
+Airbag,B1324,OC Communication Error
+Airbag,B1325,OC ID fault
+Airbag,B1326,FIS-Driver short to Ground
+Airbag,B1327,FIS-Driver short to Battery
+Airbag,B1328,FIS-Driver defect
+Airbag,B1329,FIS-Driver communication error
+Airbag,B1331,FIS-Passenger short to Ground
+Airbag,B1332,FIS-Passenger short to Battery
+Airbag,B1333,FIS-Passenger defect
+Airbag,B1334,FIS-Passenger communication error
+Airbag,B1346,Driver airbag resistance too High (1st stage)
+Airbag,B1347,Driver airbag resistance too Low (1st stage)
+Airbag,B1348,Driver airbag resistance circuit short to Ground (1st stage)
+Airbag,B1349,Driver airbag resistance circuit short to Battery (1st stage)
+Airbag,B1352,Passenger airbag resistance too High (1st stage)
+Airbag,B1353,Passenger airbag resistance too Low (1st stage)
+Airbag,B1354,Passenger airbag resistance circuit short to Ground (1st stage)
+Airbag,B1355,Passenger airbag resistance circuit short to Battery (1st stage)
+Airbag,B1361,Pretensioner front-Driver resistance too High
+Airbag,B1362,Pretensioner front-Driver resistance too Low
+Airbag,B1363,Pretensioner front-Driver resistance circuit short to Ground
+Airbag,B1364,Pretensioner front-Driver resistance circuit short to Battery
+Airbag,B1367,Pretensioner front-Passenger resistance too High
+Airbag,B1368,Pretensioner front-Passenger resistance too Low
+Airbag,B1369,Pretensioner front-Passenger resistance circuit short to Ground
+Airbag,B1370,Pretensioner front-Passenger resistance circuit short to Battery
+Airbag,B1378,Side airbag front-Driver resistance too High
+Airbag,B1379,Side airbag front-Driver resistance too Low
+Airbag,B1380,Side airbag front-Driver resistance circuit short to Ground
+Airbag,B1381,Side airbag front-Driver resistance circuit short to Battery
+Airbag,B1382,Side airbag front-Passenger resistance too High
+Airbag,B1383,Side airbag front-Passenger resistance too Low
+Airbag,B1384,Side airbag front-Passenger resistance circuit short to Ground
+Airbag,B1385,Side airbag front-Passenger resistance circuit short to Battery
+Airbag,B1400,SIS front-Driver defect
+Airbag,B1401,SIS front-Driver circuit short to Ground
+Airbag,B1402,SIS front-Driver circuit short to Battery
+Airbag,B1403,SIS front-Passenger defect
+Airbag,B1404,SIS front-Passenger circuit short to Ground
+Airbag,B1405,SIS front-Passenger circuit short to Battery
+Airbag,B1409,SIS front-Driver communication error
+Airbag,B1410,SIS front-Passenger communication error
+Airbag,B1412,SIS rear-Driver communication error
+Airbag,B1413,SIS rear-Passenger communication error
+Airbag,B1418,SIS rear-Driver defect
+Airbag,B1419,SIS rear-Passenger defect
+Airbag,B1429,Side airbag rear-Driver resistance too High
+Airbag,B1430,Side airbag rear-Driver resistance too Low
+Airbag,B1431,Side airbag rear-Driver circuit short to Ground
+Airbag,B1432,Side airbag rear-Driver circuit short to Battery
+Airbag,B1433,Side airbag rear-Passenger resistance too High
+Airbag,B1434,Side airbag rear-Passenger resistance too Low
+Airbag,B1435,Side airbag rear-Passenger circuit short to Ground
+Airbag,B1436,Side airbag rear-Passenger circuit short to Battery
+Airbag,B1451,SIS rear-Driver circuit short to Ground
+Airbag,B1452,SIS rear-Driver circuit short to Battery
+Airbag,B1454,SIS rear-Passenger circuit short to Ground
+Airbag,B1455,SIS rear-Passenger circuit short to Battery
+Airbag,B1473,Inflatable curtain airbag-Driver resistance too High
+Airbag,B1474,Inflatable curtain airbag-Driver resistance too Low
+Airbag,B1475,Inflatable curtain airbag-Driver resistance circuit short to Ground
+Airbag,B1476,Inflatable curtain airbag-Driver resistance circuit short to Battery
+Airbag,B1477,Inflatable curtain airbag-Passenger resistance too High
+Airbag,B1478,Inflatable curtain airbag-Passenger resistance too Low
+Airbag,B1479,Inflatable curtain airbag-Passenger resistance circuit short to Ground
+Airbag,B1480,Inflatable curtain airbag-Passenger resistance circuit short to Battery
+Airbag,B1481,2nd stage Driver airbag resistance too High
+Airbag,B1482,2nd stage Driver airbag resistance too Low
+Airbag,B1483,2nd stage Driver airbag resistance circuit short to Ground
+Airbag,B1484,2nd stage Driver airbag resistance circuit short to Battery
+Airbag,B1485,2nd stage Passenger airbag resistance too High
+Airbag,B1486,2nd stage Passenger airbag resistance too Low
+Airbag,B1487,2nd stage Passenger airbag resistance circuit short to Ground
+Airbag,B1488,2nd stage Passenger airbag resistance circuit short to Battery
+Airbag,B1511,Buckle Switch Driver open or short to Battery
+Airbag,B1512,Buckle Switch Driver short or short to Ground
+Airbag,B1513,Buckle Switch Passenger open or short to Battery
+Airbag,B1514,Buckle Switch Passenger short or short to Ground
+Airbag,B1515,Buckle Switch Driver interconnection
+Airbag,B1516,Buckle Switch Passenger interconnection
+Airbag,B1620,Internal fault - Replace ECU
+Airbag,B1650,Frontal airbag Deployed
+Airbag,B1651,Driver side airbag Deployed
+Airbag,B1652,Passenger side airbag Deployed
+Airbag,B1657,Belt pretensioner Deployed
+Airbag,B1701,Buckle pretensioner - Driver resistance too High
+Airbag,B1702,Buckle pretensioner - Driver resistance too Low
+Airbag,B1703,Buckle pretensioner - Driver resistance circuit short to Ground
+Airbag,B1704,Buckle pretensioner - Driver resistance circuit short to Battery
+Airbag,B1706,Buckle pretensioner - Passenger resistance too High
+Airbag,B1707,Buckle pretensioner - Passenger resistance too Low
+Airbag,B1708,Buckle pretensioner - Passenger resistance circuit short to Ground
+Airbag,B1709,Buckle pretensioner - Passenger resistance circuit short to Battery
+Airbag,B2505,Passenger airbag off warning lamp failure
+Airbag,B2660,CAN Bus Off
+Airbag,B2662,CAN Communication Error - ESC
+Airbag,B2663,CAN Communication Error - DLCM
 HVAC,B111D,Battery Evap Air Off temperature sensor fault
 HVAC,B112D,Cabin Airmix motor fault
+HVAC,B1132,Heater coolant pump fault
 ACCompressor,U0155,Lost Communication With Instrument Panel Cluster (IPC) Control Module

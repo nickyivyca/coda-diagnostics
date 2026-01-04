@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import time
 import can
 import argparse
@@ -61,6 +60,126 @@ def load_abs_raw_busmaster(path):
     return frames
 
 
+def load_bms_raw_busmaster(path):
+    """
+    Load raw BMS frames from a BusMaster log.
+    Only keeps frames with ID 0x72A.
+    """
+    frames = []
+    with open(path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("***"):
+                continue
+
+            parts = line.split()
+            if len(parts) < 7:
+                continue
+
+            try:
+                can_id_str = parts[3]
+                if not can_id_str.lower().startswith("0x"):
+                    continue
+                arb_id = int(can_id_str, 16)
+            except Exception:
+                continue
+
+            if arb_id != 0x72A:
+                continue
+
+            try:
+                dlc = int(parts[5])
+                data_bytes = parts[6:6+dlc]
+                data = bytes(int(b, 16) for b in data_bytes)
+            except Exception:
+                continue
+
+            frames.append((arb_id, data))
+
+    print(f"[BMS-RAW-BUSMASTER] Loaded {len(frames)} frames from {path}")
+    return frames
+
+
+def load_airbag_raw_busmaster(path):
+    """
+    Load raw Airbag frames from a BusMaster log.
+    Only keeps frames with ID 0x7CC (airbag response).
+    """
+    frames = []
+    with open(path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("***"):
+                continue
+
+            parts = line.split()
+            if len(parts) < 7:
+                continue
+
+            try:
+                can_id_str = parts[3]
+                if not can_id_str.lower().startswith("0x"):
+                    continue
+                arb_id = int(can_id_str, 16)
+            except Exception:
+                continue
+
+            if arb_id != 0x7CC:
+                continue
+
+            try:
+                dlc = int(parts[5])
+                data_bytes = parts[6:6+dlc]
+                data = bytes(int(b, 16) for b in data_bytes)
+            except Exception:
+                continue
+
+            frames.append((arb_id, data))
+
+    print(f"[AIRBAG-RAW-BUSMASTER] Loaded {len(frames)} frames from {path}")
+    return frames
+
+
+def load_hvac_raw_busmaster(path):
+    """
+    Load raw HVAC frames from a BusMaster log.
+    Only keeps frames with ID 0x758 (HVAC response).
+    """
+    frames = []
+    with open(path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("***"):
+                continue
+
+            parts = line.split()
+            if len(parts) < 7:
+                continue
+
+            try:
+                can_id_str = parts[3]
+                if not can_id_str.lower().startswith("0x"):
+                    continue
+                arb_id = int(can_id_str, 16)
+            except Exception:
+                continue
+
+            if arb_id != 0x758:
+                continue
+
+            try:
+                dlc = int(parts[5])
+                data_bytes = parts[6:6+dlc]
+                data = bytes(int(b, 16) for b in data_bytes)
+            except Exception:
+                continue
+
+            frames.append((arb_id, data))
+
+    print(f"[HVAC-RAW-BUSMASTER] Loaded {len(frames)} frames from {path}")
+    return frames
+
+
 def _load_raw_txt(path, expected_id):
     """
     Generic raw frame loader for our own script logs.
@@ -111,49 +230,21 @@ def load_ac_raw_txt(path):
     return frames
 
 
-def load_airbag_raw_busmaster(path):
-    """
-    Load raw Airbag frames from a BusMaster log.
-    Only keeps frames with ID 0x7CC (airbag response).
-    """
-    frames = []
-    with open(path, "r") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("***"):
-                continue
-
-            parts = line.split()
-            if len(parts) < 7:
-                continue
-
-            try:
-                can_id_str = parts[3]
-                if not can_id_str.lower().startswith("0x"):
-                    continue
-                arb_id = int(can_id_str, 16)
-            except Exception:
-                continue
-
-            if arb_id != 0x7CC:
-                continue
-
-            try:
-                dlc = int(parts[5])
-                data_bytes = parts[6:6+dlc]
-                data = bytes(int(b, 16) for b in data_bytes)
-            except Exception:
-                continue
-
-            frames.append((arb_id, data))
-
-    print(f"[AIRBAG-RAW-BUSMASTER] Loaded {len(frames)} frames from {path}")
-    return frames
-
-
 def load_airbag_raw_txt(path):
     frames = _load_raw_txt(path, 0x7CC)
     print(f"[AIRBAG-RAW-TXT] Loaded {len(frames)} frames from {path}")
+    return frames
+
+
+def load_bms_raw_txt(path):
+    frames = _load_raw_txt(path, 0x72A)
+    print(f"[BMS-RAW-TXT] Loaded {len(frames)} frames from {path}")
+    return frames
+
+
+def load_hvac_raw_txt(path):
+    frames = _load_raw_txt(path, 0x758)
+    print(f"[HVAC-RAW-TXT] Loaded {len(frames)} frames from {path}")
     return frames
 
 
@@ -163,12 +254,12 @@ def load_airbag_raw_txt(path):
 
 def parse_sae_dtc(s):
     """
-    ABS/Airbag-specific DTC parsing:
     Take the last 4 characters as a pure hex 16-bit value.
     Example:
       C102B -> 0x102B
       C2100 -> 0x2100
       U0155 -> 0x0155
+      P1B1D -> 0x1B1D
     """
     s = s.strip().upper()
     if len(s) != 5:
@@ -257,37 +348,28 @@ def build_abs_synthetic_response(dtc_list):
 # =============================================================================
 #  AIRBAG SYNTHETIC DTC ENCODING
 # =============================================================================
-
-def encode_airbag_dtc_from_sae(sae_code, multi=False):
-    """
-    For now use same DTC triplet encoding rules as ABS:
-      hi/lo from last 4 digits, hi |= 0x40, status depends on multi.
-    """
-    raw = parse_sae_dtc(sae_code)
-
-    hi = (raw >> 8) & 0xFF
+def encode_airbag_dtc_from_sae(sae, multi=False):
+    raw = parse_sae_dtc(sae)
+    hi_raw = (raw >> 8) & 0xFF
     lo = raw & 0xFF
 
-    hi |= 0x40
+    # Airbag encoding: add 0x80 to the raw high byte
+    hi = 0x80 | hi_raw
 
-    if multi:
-        status = 0x20
-    else:
-        status = 0xE0
-
+    status = 0x20 if multi else 0xE0
     return bytes([hi, lo, status])
 
 
 def build_airbag_synthetic_response(dtc_list):
     """
     Build UDS-18 payload for Airbag synthetic DTCs on 0x7CC.
-    Airbag behavior from logs:
-      - Request: 7C4 04 18 02 FF ...
-      - First response: 7CC 03 7F 18 78 00 00 00 00 (response pending)
-      - Second response: 7CC 05 58 01 A5 05 E0 00 00 (final)
-    We will mimic this by:
-      - Always sending a 7F 18 78 pending frame first.
-      - Then sending a 58 final response, with 0 or more triplets.
+    Observed behavior:
+      - 7C4 04 18 02 FF ...
+      - 7CC 03 7F 18 78 00 00 00 00 (pending)
+      - 7CC 05 58 01 A5 05 E0 00 00 (final)
+    We mimic this with:
+      - Always a 7F 18 78 pending frame first.
+      - Then a 58 final response with 0 or more triplets.
     """
     frames = []
 
@@ -303,8 +385,7 @@ def build_airbag_synthetic_response(dtc_list):
     payload.append(0x58)  # Positive response to 0x18
 
     if not dtc_list:
-        # Match your "no DTCs" case: mask=0x00, no triplets
-        payload.append(0x00)
+        payload.append(0x00)  # mask=0, no DTCs
     else:
         multi = len(dtc_list) > 1
         if multi:
@@ -322,7 +403,6 @@ def build_airbag_synthetic_response(dtc_list):
         frames.append((0x7CC, data))
         return frames
 
-    # Multi-frame airbag not observed yet, but we can add later if needed.
     total_len = len(payload)
     ff = bytes([0x10 | (total_len >> 8), total_len & 0xFF]) + payload[:6]
     ff = ff.ljust(8, b"\x00")
@@ -342,18 +422,159 @@ def build_airbag_synthetic_response(dtc_list):
 
 
 # =============================================================================
-#  ISO-TP MULTIFRAME SENDER (ABS, OPTION B)
+#  HVAC SYNTHETIC DTC ENCODING
 # =============================================================================
 
-def send_isotp_multiframe(bus, frames):
+def encode_hvac_dtc_from_sae(sae_code, multi=False):
+    """
+    HVAC uses the same chassis16-style mapping as Airbag/Gateway:
+      hi_encoded = 0x80 | hi_raw
+    """
+    raw = parse_sae_dtc(sae_code)
+    hi_raw = (raw >> 8) & 0xFF
+    lo = raw & 0xFF
+
+    hi = 0x80 | hi_raw
+    status = 0x20 if multi else 0xE0
+    return bytes([hi, lo, status])
+
+
+def build_hvac_synthetic_response(dtc_list):
+    """
+    Build UDS-19 02 payload for HVAC synthetic DTCs on 0x758.
+    Layout (simplified, consistent with decoder):
+      59 02 FF [triplets...]
+    where triplets are [hi, lo, status].
+    """
+    payload = bytearray()
+    payload.append(0x59)  # positive response to 0x19
+    payload.append(0x02)  # subfunction 0x02
+    payload.append(0xFF)  # status availability mask
+
+    multi = len(dtc_list) > 1
+    for code in dtc_list:
+        payload.extend(encode_hvac_dtc_from_sae(code, multi=multi))
+
+    frames = []
+
+    if len(payload) <= 7:
+        sf_pci = 0x00 | len(payload)
+        data = bytes([sf_pci]) + payload
+        data = data.ljust(8, b"\x00")
+        frames.append((0x758, data))
+        return frames
+
+    total_len = len(payload)
+    ff = bytes([0x10 | (total_len >> 8), total_len & 0xFF]) + payload[:6]
+    ff = ff.ljust(8, b"\x00")
+    frames.append((0x758, ff))
+
+    idx = 6
+    sn = 1
+    while idx < len(payload):
+        chunk = payload[idx:idx+7]
+        cf = bytes([0x20 | (sn & 0x0F)]) + chunk
+        cf = cf.ljust(8, b"\x00")
+        frames.append((0x758, cf))
+        idx += 7
+        sn += 1
+
+    return frames
+
+
+# =============================================================================
+#  BMS SYNTHETIC DTC ENCODING
+# =============================================================================
+
+def encode_bms_dtc_from_sae(sae_code):
+    """
+    BMS DTC layout from log:
+      FF: 59 02 0C 1B 1D 02
+      CF: 0C 1B 1E 02 8C ...
+    DTC entries appear to be 4 bytes: 0C 1B 1D 02 => P1B1D.
+    We'll build 4-byte DTC entries:
+      [0C, hi, lo, xx]
+    For now:
+      - upper nibble 0x0C for 'P' type
+      - hi/lo from last 4 hex digits
+      - fourth byte = 0x02 (from your real log)
+    Status is a single byte 0x8C after all DTCs.
+    """
+    raw = parse_sae_dtc(sae_code)
+    hi = (raw >> 8) & 0xFF
+    lo = raw & 0xFF
+
+    # Use 0x0C as first byte for P-codes (from real log)
+    prefix = 0x0C
+    suffix = 0x02  # from your P1B1D/P1B1E log
+
+    return bytes([prefix, hi, lo, suffix])
+
+
+def build_bms_synthetic_response(dtc_list):
+    """
+    Build UDS-19 02 0C BMS synthetic DTC response on 0x72A.
+    Real log:
+      Req: 722 03 19 02 0C 00 00 00 00
+      Rsp: 72A 10 0B 59 02 0C 1B 1D 02
+           72A 21 0C 1B 1E 02 8C 00 00
+    Layout:
+      59 02 [DTCs ...] [status]
+    where DTCs are 4-byte entries, status is 1 byte (0x8C).
+    """
+    payload = bytearray()
+    payload.append(0x59)  # positive response to 0x19
+    payload.append(0x02)  # subfunction 0x02
+
+    dtc_bytes = bytearray()
+    for code in dtc_list:
+        dtc_bytes.extend(encode_bms_dtc_from_sae(code))
+
+    # Append DTC bytes then status
+    payload.extend(dtc_bytes)
+    payload.append(0xfc)  # hard-coded status byte for now
+
+    frames = []
+
+    # Always multi-frame if length > 7
+    if len(payload) <= 7:
+        sf_pci = 0x00 | len(payload)
+        data = bytes([sf_pci]) + payload
+        data = data.ljust(8, b"\x00")
+        frames.append((0x72A, data))
+        return frames
+
+    total_len = len(payload)
+    ff = bytes([0x10 | (total_len >> 8), total_len & 0xFF]) + payload[:6]
+    ff = ff.ljust(8, b"\x00")
+    frames.append((0x72A, ff))
+
+    idx = 6
+    sn = 1
+    while idx < len(payload):
+        chunk = payload[idx:idx+7]
+        cf = bytes([0x20 | (sn & 0x0F)]) + chunk
+        cf = cf.ljust(8, b"\x00")
+        frames.append((0x72A, cf))
+        idx += 7
+        sn += 1
+
+    return frames
+
+
+# =============================================================================
+#  ISO-TP MULTIFRAME SENDER (ABS/BMS/HVAC, OPTION B)
+# =============================================================================
+
+def send_isotp_multiframe(bus, frames, fc_id):
     """
     frames = list of (arb_id, data)
     frames[0] must be FF, remaining are CFs.
 
     Option B behavior:
       - Send FF
-      - Pause ~30 ms (like real ABS)
-      - Wait up to 1s for FC (ID 0x784, PCI 0x30)
+      - Pause ~30 ms
+      - Wait up to 1s for FC (fc_id, PCI 0x30)
         - If FC arrives: honor STmin
         - If no FC: still send CFs with small default gap
     """
@@ -363,7 +584,7 @@ def send_isotp_multiframe(bus, frames):
     dbg_tx(ff_arb, ff_data)
     bus.send(can.Message(arbitration_id=ff_arb, data=ff_data, is_extended_id=False))
 
-    # Give the scanner time to send FC (real ABS pauses here)
+    # Give the scanner time to send FC
     time.sleep(0.03)
 
     # Default behavior if no FC
@@ -371,7 +592,7 @@ def send_isotp_multiframe(bus, frames):
 
     # Try to receive FC
     fc = bus.recv(timeout=1.0)
-    if fc and fc.arbitration_id == 0x784:
+    if fc and fc.arbitration_id == fc_id:
         pci = fc.data[0]
         if (pci & 0xF0) == 0x30:  # FC frame
             st_min_raw = fc.data[2]
@@ -448,7 +669,7 @@ def handle_abs_request(bus, msg, abs_mode, abs_dtc_list, abs_raw_frames):
             dbg_tx(arb_id, d)
             bus.send(can.Message(arbitration_id=arb_id, data=d, is_extended_id=False))
         else:
-            send_isotp_multiframe(bus, frames)
+            send_isotp_multiframe(bus, frames, fc_id=0x784)
 
     # Raw replay (BusMaster or txt)
     elif abs_mode in ("raw_busmaster", "raw_txt") and abs_raw_frames:
@@ -525,6 +746,87 @@ def handle_airbag_request(bus, msg, airbag_mode, airbag_dtc_list, airbag_raw_fra
 
 
 # =============================================================================
+#  BMS RESPONDER (SYNTHETIC + RAW)
+# =============================================================================
+
+def handle_bms_request(bus, msg, bms_mode, bms_dtc_list, bms_raw_frames):
+    """
+    BMS uses UDS 0x19 02 0C on request ID 0x722, response on 0x72A.
+    Real log:
+      CAN TX 722 03 19 02 0C 00 00 00 00
+      CAN RX 72A 10 0B 59 02 0C 1B 1D 02
+      CAN TX 722 30 00 00 00 00 00 00 00
+      CAN RX 72A 21 0C 1B 1E 02 8C 00 00
+    """
+    data = bytes(msg.data)
+    if len(data) < 3:
+        return
+
+    pci = data[0]
+    if (pci & 0xF0) != 0x00:
+        return
+
+    sid = data[1]
+    sub = data[2]
+
+    if sid == 0x19 and sub == 0x02:
+        # Raw replay
+        if bms_mode in ("raw_busmaster", "raw_txt") and bms_raw_frames:
+            for arb_id, d in bms_raw_frames:
+                dbg_tx(arb_id, d)
+                bus.send(can.Message(arbitration_id=arb_id, data=d, is_extended_id=False))
+            return
+
+        # Synthetic mode
+        if bms_mode == "dtc" and bms_dtc_list:
+            frames = build_bms_synthetic_response(bms_dtc_list)
+            if len(frames) == 1:
+                arb_id, d = frames[0]
+                dbg_tx(arb_id, d)
+                bus.send(can.Message(arbitration_id=arb_id, data=d, is_extended_id=False))
+            else:
+                send_isotp_multiframe(bus, frames, fc_id=0x722)
+
+
+# =============================================================================
+#  HVAC RESPONDER (SYNTHETIC + RAW)
+# =============================================================================
+
+def handle_hvac_request(bus, msg, hvac_mode, hvac_dtc_list, hvac_raw_frames):
+    """
+    HVAC uses UDS 0x19 02 on request ID 0x750, response on 0x758.
+    """
+    data = bytes(msg.data)
+    if len(data) < 3:
+        return
+
+    pci = data[0]
+    if (pci & 0xF0) != 0x00:
+        return
+
+    sid = data[1]
+    sub = data[2]
+
+    if sid == 0x19 and sub == 0x02:
+        # Raw replay
+        if hvac_mode in ("raw_busmaster", "raw_txt") and hvac_raw_frames:
+            for arb_id, d in hvac_raw_frames:
+                dbg_tx(arb_id, d)
+                bus.send(can.Message(arbitration_id=arb_id, data=d, is_extended_id=False))
+            return
+
+        # Synthetic mode
+        if hvac_mode == "dtc" and hvac_dtc_list:
+            frames = build_hvac_synthetic_response(hvac_dtc_list)
+            if len(frames) == 1:
+                arb_id, d = frames[0]
+                dbg_tx(arb_id, d)
+                bus.send(can.Message(arbitration_id=arb_id, data=d, is_extended_id=False))
+            else:
+                send_isotp_multiframe(bus, frames, fc_id=0x750)
+
+
+# =============================================================================
 #  MAIN DISPATCH LOOP
 # =============================================================================
 
@@ -545,6 +847,16 @@ def main():
     p.add_argument("--airbag-dtc", nargs="*", help="Airbag DTCs (synthetic) like Bxxxx/Uxxxx")
     p.add_argument("--airbag-raw-busmaster", help="Airbag raw replay from BusMaster log")
     p.add_argument("--airbag-raw-txt", help="Airbag raw replay from script log")
+
+    # BMS modes
+    p.add_argument("--bms-dtc", nargs="*", help="BMS DTCs like P1B1D P1B1E")
+    p.add_argument("--bms-raw-busmaster", help="BMS raw replay from BusMaster log")
+    p.add_argument("--bms-raw-txt", help="BMS raw replay from script log")
+
+    # HVAC modes
+    p.add_argument("--hvac-dtc", nargs="*", help="HVAC DTCs (synthetic) like Bxxxx")
+    p.add_argument("--hvac-raw-busmaster", help="HVAC raw replay from BusMaster log")
+    p.add_argument("--hvac-raw-txt", help="HVAC raw replay from script log")
 
     # Ignition state
     p.add_argument("--ignition-state", default="3")
@@ -569,7 +881,6 @@ def main():
     # AC mode selection (raw only)
     ac_mode = None
     ac_raw_frames = None
-
     if args.ac_raw_txt:
         ac_mode = "raw_txt"
         ac_raw_frames = load_ac_raw_txt(args.ac_raw_txt)
@@ -589,9 +900,39 @@ def main():
         airbag_mode = "dtc"
         airbag_dtc_list = [x.strip().upper() for x in args.airbag_dtc]
     else:
-        # If no airbag args, default to synthetic "no DTCs" when asked
+        # Default: synthetic "no DTCs" when asked
         airbag_mode = "dtc"
         airbag_dtc_list = []
+
+    # BMS mode selection
+    bms_mode = None
+    bms_dtc_list = None
+    bms_raw_frames = None
+
+    if args.bms_raw_busmaster:
+        bms_mode = "raw_busmaster"
+        bms_raw_frames = load_bms_raw_busmaster(args.bms_raw_busmaster)
+    elif args.bms_raw_txt:
+        bms_mode = "raw_txt"
+        bms_raw_frames = load_bms_raw_txt(args.bms_raw_txt)
+    elif args.bms_dtc:
+        bms_mode = "dtc"
+        bms_dtc_list = [x.strip().upper() for x in args.bms_dtc]
+
+    # HVAC mode selection
+    hvac_mode = None
+    hvac_dtc_list = None
+    hvac_raw_frames = None
+
+    if args.hvac_raw_busmaster:
+        hvac_mode = "raw_busmaster"
+        hvac_raw_frames = load_hvac_raw_busmaster(args.hvac_raw_busmaster)
+    elif args.hvac_raw_txt:
+        hvac_mode = "raw_txt"
+        hvac_raw_frames = load_hvac_raw_txt(args.hvac_raw_txt)
+    elif args.hvac_dtc:
+        hvac_mode = "dtc"
+        hvac_dtc_list = [x.strip().upper() for x in args.hvac_dtc]
 
     ign_str = args.ignition_state.strip().lower()
     ignition_state = int(ign_str, 16) if ign_str.startswith("0x") else int(ign_str)
@@ -615,6 +956,18 @@ def main():
     elif airbag_mode in ("raw_busmaster", "raw_txt"):
         print(f"[CONFIG] Airbag raw frames={len(airbag_raw_frames) if airbag_raw_frames else 0}")
 
+    print(f"[CONFIG] BMS mode={bms_mode}")
+    if bms_mode == "dtc":
+        print(f"[CONFIG] BMS synthetic DTCs={bms_dtc_list}")
+    elif bms_mode in ("raw_busmaster", "raw_txt"):
+        print(f"[CONFIG] BMS raw frames={len(bms_raw_frames) if bms_raw_frames else 0}")
+
+    print(f"[CONFIG] HVAC mode={hvac_mode}")
+    if hvac_mode == "dtc":
+        print(f"[CONFIG] HVAC synthetic DTCs={hvac_dtc_list}")
+    elif hvac_mode in ("raw_busmaster", "raw_txt"):
+        print(f"[CONFIG] HVAC raw frames={len(hvac_raw_frames) if hvac_raw_frames else 0}")
+
     bus = can.interface.Bus(interface=args.interface,
                             channel=args.channel,
                             bitrate=BITRATE)
@@ -636,6 +989,10 @@ def main():
             handle_ac_request(bus, msg, ac_mode, ac_raw_frames)
         elif arb == 0x7C4:
             handle_airbag_request(bus, msg, airbag_mode, airbag_dtc_list, airbag_raw_frames)
+        elif arb == 0x722:
+            handle_bms_request(bus, msg, bms_mode, bms_dtc_list, bms_raw_frames)
+        elif arb == 0x750:
+            handle_hvac_request(bus, msg, hvac_mode, hvac_dtc_list, hvac_raw_frames)
 
 
 if __name__ == "__main__":
