@@ -20,4 +20,5 @@ Currently supported/tested CAN dongles:
 - Ixxat (Windows)
 - PCAN (Windows)
 - Socketcan (Linux)
+
 Any CAN dongle supported by the Python CAN library should be able to be implemented however.
