@@ -384,6 +384,11 @@ PowerSteering,C1901,Battery Voltage low
 PowerSteering,C1902,Battery Voltage High
 PowerSteering,U1000,Bus off Fault
 PowerSteering,U1027,"Missing ECU Message, (DTC shall be inhibited if battery voltage is not in the range 9-16 volts)"
+PowerSteering,C1325,Flash Programming Malfunction
+PowerSteering,C1300,Steering Shaft Torque Sensor Malfunction
+PowerSteering,C1301,Steering Angle Sensor Signal Error
+PowerSteering,C1350,Electronic Power Steering Motor Malfunction
+PowerSteering,C1323,ECU In Faulted
 RCU,INVALID KEY,Invalid Key (Authentication KO)
 RCU,LEFT FRONT,Wheel 0 battery alert OR Wheel 0 fault alert OR Wheel 0 dead sensor
 RCU,LEFT REAR,Wheel 4 battery alert OR Wheel 4 fault alert OR Wheel 4 dead sensor
