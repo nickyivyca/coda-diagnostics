@@ -14,3 +14,10 @@ Currently supports reading and clearing codes from the following:
 Does not support:
 - Chargers (seems to be some sort of weird security handshake involved that the Omitec scanner uses)
 - RCU (no clean DTC indication in the CAN messages logged, may implement when I can dig deeper)
+
+Currently supported/tested CAN dongles:
+- Kvaser (Windows)
+- Ixxat (Windows)
+- PCAN (Windows)
+- Socketcan (Linux)
+Any CAN dongle supported by the Python CAN library should be able to be implemented however.
