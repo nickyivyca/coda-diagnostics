@@ -1,0 +1,397 @@
+module,dtc,description
+ABS,C0021,Brake Booster Performance
+ABS,C1000,Brake Pedal Switch 1 Circuit Performance
+ABS,C1008,Brake Fluid Level Circuit High
+ABS,C1009,Brake Fluid Level Low
+ABS,C100A,Left Front Wheel Speed Sensor Circuit
+ABS,C1011,Left Front Wheel Speed Sensor Signal Erratic Performance
+ABS,C1014,Left Front Wheel Speed Comparative Performance
+ABS,C1015,Right Front Wheel Speed Sensor Circuit
+ABS,C101C,Right Front Wheel Speed Sensor Signal Erratic Performance
+ABS,C101F,Right Front Wheel Speed Comparative Performance
+ABS,C1020,Left Rear Wheel Speed Sensor Circuit
+ABS,C1027,Left Rear Wheel Speed Sensor Signal Erratic Performance
+ABS,C102A,Left Rear Wheel Speed Comparative Performance
+ABS,C102B,Right Rear Wheel Speed Sensor Circuit
+ABS,C1032,Right Rear Wheel Speed Sensor Signal Erratic Performance
+ABS,C1035,Right Rear Wheel Speed Comparative Performance
+ABS,C1036,Rear Wheel Speed Sensor Circuit
+ABS,C103D,Rear Wheel Speed Sensor Signal Erratic Performance
+ABS,C1040,Rear Wheel Speed Comparative Performance
+ABS,C1041,Left Front Tone Wheel Performance
+ABS,C1042,Right Front Tone Wheel Performance
+ABS,C1043,Left Rear Tone Wheel Performance
+ABS,C1044,Right Rear Tone Wheel Performance
+ABS,C1046,Left Front Wheel Pressure Phase Monitoring
+ABS,C1047,Right Front Wheel Pressure Phase Monitoring
+ABS,C1048,Left Rear Wheel Pressure Phase Monitoring
+ABS,C1049,Right Rear Wheel Pressure Phase Monitoring
+ABS,C104C,Left Front Inlet Valve Control Circuit Low
+ABS,C1050,Right Front Inlet Valve Control Circuit Low
+ABS,C1054,Left Rear Inlet Valve Control Circuit Low
+ABS,C1058,Right Rear Inlet Valve Control Circuit Low
+ABS,C105C,Rear Inlet Valve Control Circuit Low
+ABS,C1060,Left Front Outlet Valve Control Circuit Low
+ABS,C1064,Right Front Outlet Valve Control Circuit Low
+ABS,C1068,Left Rear Outlet Valve Control Circuit Low
+ABS,C106C,Right Rear Outlet Valve Control Circuit Low
+ABS,C1070,Rear Outlet Valve Control Circuit Low
+ABS,C1073,ABS Pump Motor Control Circuit
+ABS,C1074,ABS Pump Motor Control Circuit Performance
+ABS,C1077,ABS Pump Motor Excessive On Time
+ABS,C1078,Tire Revolutions Range Performance
+ABS,C1079,Tone Wheel Teeth Count Range Performance
+ABS,C107B,Wheel Speed Comparative Performance
+ABS,C107C,Brake Pedal Switch 1/2 Stuck
+ABS,C107D,Brake Pedal Switch 1/2 Correlation
+ABS,C107F,Brake Lamp Inhibit Control Circuit Low
+ABS,C1080,Brake Lamp Inhibit Control Circuit High
+ABS,C1082,Vacuum Pressure Sensor Circuit
+ABS,C1083,Vacuum Pressure Sensor Circuit Performance
+ABS,C1084,Vacuum Pressure Sensor Circuit Low
+ABS,C1085,Vacuum Pressure Sensor Circuit High
+ABS,C1086,ABS System Control Too Long
+ABS,C1087,Brake Lamp Inhibit Control Circuit Performance
+ABS,C108A,Driver Acceleration Request / ACC Deceleration Request Correlation
+ABS,C108B,Driver Deceleration Request / ACC Acceleration Request Correlation
+ABS,C108C,ACC Maximum Deceleration Threshold Exceeded
+ABS,C108D,ACC Maximum Acceleration Threshold Exceeded
+ABS,C108F,ABS Brake Lamp Control Circuit Performance
+ABS,C1090,ABS Brake Lamp Control Circuit Low
+ABS,C1091,ABS Brake Lamp Control Circuit High
+ABS,C1093,Front Brake Pressure Sensor Circuit
+ABS,C1094,Front Brake Pressure Sensor Circuit Performance
+ABS,C1097,Rear Brake Pressure Sensor Circuit
+ABS,C1098,Rear Brake Pressure Sensor Circuit Performance
+ABS,C1201,Front Traction Control Inlet Valve Control Circuit Low
+ABS,C1205,Rear Traction Control Inlet Valve Control Circuit Low
+ABS,C1209,Front Traction Control Prime Valve Control Circuit Low
+ABS,C120D,Rear Traction Control Prime Valve Control Circuit Low
+ABS,C1210,G Sensor Input Circuit Performance
+ABS,C1213,G Sensor Input Signal Stuck
+ABS,C1219,Steering Angle Sensor Erratic Performance
+ABS,C121A,Steering Angle Sensor Not Initialized
+ABS,C121C,Torque Request Signal Denied
+ABS,C121D,Brake Pressure Sensor Circuit
+ABS,C121E,Brake Pressure Sensor Comparative Performance
+ABS,C1221,Brake Pressure Sensor/Accelerator Pedal Position Sensor Correlation
+ABS,C1222,Brake Pedal Travel Sensor/Brake Pressure Sensor Correlation
+ABS,C1227,Brake Pedal Travel Sensor Circuit Performance
+ABS,C1228,Brake Pedal Travel Sensor Circuit Low
+ABS,C1229,Brake Pedal Travel Sensor Circuit High
+ABS,C122A,Brake Pedal Force Switch Circuit
+ABS,C122B,Brake Pedal Force Switch Circuit Performance
+ABS,C122C,Active Brake Booster Control Circuit Supply Voltage
+ABS,C122D,Active Brake Booster Control Circuit
+ABS,C1231,Drive Test: Steering Angle Sensor
+ABS,C1232,Drive Test: Pressure Sensor
+ABS,C1234,Drive Test: Sensor Cluster Installation
+ABS,C1235,Drive Test: Test Active
+ABS,C1238,Drive Test: Unsuccessful
+ABS,C1239,Emissions Rolls Test Active
+ABS,C123A,ESP System Sensors Calibration
+ABS,C123B,ESP System Control Too Long
+ABS,C123C,Dynamics Sensor Mounting/Installation Performance
+ABS,C123F,Steering Angle Sensor Comparative Performance
+ABS,C1240,Steering Angle Sensor Angle Overtravel Performance
+ABS,C1242,G Sensor Input Signal Performance
+ABS,C1243,G Sensor Not Intialized
+ABS,C1246,Vacuum Pressure Sensor Supply Circuit
+ABS,C1249,ACC DTC Present
+ABS,C124A,ACC Torque Request Signal Denied
+ABS,C124D,ESP Not Calibrated
+ABS,C124E,Hill Start Assist Disabled - Conditions Not Correct
+ABS,C124F,ESP Request Denied From ACC
+ABS,C2100,Battery Voltage Low
+ABS,C2101,Battery Voltage High
+ABS,C2105,ABS Valve Supply Voltage Circuit Low
+ABS,C2111,Sensor Supply 1 Voltage Circuit Low
+ABS,C2112,Sensor Supply 1 Voltage Circuit High
+ABS,C2114,Dynamics Sensor Supply Voltage Low
+ABS,C2115,Dynamics Sensor Supply Voltage High
+ABS,C2116,ABS Pump Motor Supply Low Voltage
+ABS,C2200,Anti-lock Brake Module Internal
+ABS,C2202,Original VIN Mismatch/Missing
+ABS,C2204,Dynamics Sensor Internal
+ABS,C2205,Steering Angle Sensor Internal
+ABS,C2206,Vehicle Configuration Mismatch
+ABS,C220A,FDCM DTC Present
+ABS,C220B,ABS ACC Valves Not Calibrated
+ABS,U0002,CAN C Bus Off Performance
+ABS,U0100,Lost Communication With ECM/PCM
+ABS,U0101,Lost Communication with TCM
+ABS,U0104,Lost Communication With Cruise Control Module
+ABS,U0114,Lost Communication With Final Drive Control Module
+ABS,U0125,Lost Communication With Dynamics Sensor
+ABS,U0126,Lost Communication With Steering Angle Sensor
+ABS,U0141,Lost Communication With FCM
+ABS,U0401,Implausible Data Received From ECM/PCM
+ABS,U0402,Implausible Data Received From TCM
+ABS,U0405,Invalid Data Received From Cruise Control Module
+ABS,U0429,Implausible Data Received from SCM
+ABS,U1003,ESP CAN C Bus Performance
+ABS,U1004,CAN C Bus Transmit Performance
+ABS,U1104,CAN C Bus CRC Performance
+ABS,U140E,Implausible Vehicle Configuration Data Received
+ABS,U1501,Implausible Message Data Length Received from ECM/PCM
+ABS,U1502,Implausible Message Data Length Received from TCM
+ABS,U1503,Implausible Message Data Length Received from FCM
+ABS,U1504,Implausible Message Data Length Received from Steering Angle Sensor
+ABS,U1505,Implausible Message Data Length Received from FDCM
+ABS,U150D,Implausible Cruise Control Module Data Length Received
+BMS,P0601,BMU Configuration Not Valid
+BMS,P0604,BMU Application CRC Failure
+BMS,P0AC0,Current Sensor Off Scale High OR Current Sensor Off Scale Low OR Current Sensor Non-Zero OC Reading
+BMS,P1700,BMU Hardware Supply Voltage Failure
+BMS,P1701,BMU Hardware external A to D out of range
+BMS,P1804,LMU Module Select Line Failure OR LMU Y Internal Fault type 2
+BMS,P1808,LMU hardware failure voltage measurement circuitry stuck on. OR LMU Address change failure
+BMS,P180C,LMU Capacitor Discharge Failure
+BMS,P180D,LMU Y external ADC Fault OR LMU Y Internal ADC Fault
+BMS,P180E,LMU Y Memory Read error OR LMU Y Application CRC failure OR LMU Y Stack Overflow OR LMU Y Invalid Instruction
+BMS,P1811,LMU Internal Fault or high resistance connection on cell YY
+BMS,P1812,LMU Internal Fault or high resistance connection on cell YY
+BMS,P1813,LMU Internal Fault when measuring cell YY
+BMS,P1814,LMU Internal Fault when measuring cell YY
+BMS,P1815,LMU Internal Fault when measuring cell YY
+BMS,P1B00,Cell Over Voltage Level A
+BMS,P1B01,Cell Over Voltage Level B
+BMS,P1B02,Cell Over Voltage Level C
+BMS,P1B03,Cell Over Voltage Level D
+BMS,P1B04,Cell Over Voltage Level E
+BMS,P1B05,1 Missing Cell Connection. (Cell YY)
+BMS,P1B09,Module Over Temperature Level A
+BMS,P1B0A,Module Over Temperature Level B
+BMS,P1B0B,Module Over Temperature Level C
+BMS,P1B0F,Vpack/Vsum Mismatch Level A
+BMS,P1B10,Vpack/Vsum Mismatch Level B
+BMS,P1B12,State of Health Low (Type 2)
+BMS,P1B15,Charge Limits Exceeded Level A OR Discharge Limits Exceeded Level A
+BMS,P1B17,Charge Limits Exceeded Level B OR Discharge Limits Exceeded Level B
+BMS,P1B18,Charge Limits reduced to zero OR Discharge Limits reduced to zero
+BMS,P1B19,Contactor Z Coil Lowside Shorted to 12V OR Contactor Z Coil Lowside Open or Shorted to GND OR Contactor Z Fail to Close OR Contactor Coil High Side Shorted to 12V OR Contactor Coil High Side Open or Shorted to GND
+BMS,P1B1A,Contactor Z Fail to Open
+BMS,P1B1B,Contactor Set Z Precharge Too Fast OR Contactor Set Z Precharge Too Slow OR Contactor Bus Z Bleeddown too slow
+BMS,P1B1D,Isolation Failure Level A Contactors Open OR Isolation Failure Level A Contactors Closed
+BMS,P1B1E,Isolation Failure Level B Contactors Open OR Isolation Failure Level B Contactors Closed
+BMS,P1B1F,Isolation Failure Level C Contactors Open OR Isolation Failure Level C Contactors Closed
+BMS,P1B20,Isolation Failure Level D Contactors Open OR Isolation Failure Level D Contactors Closed
+BMS,P1B21,HVIL Opened/Shorted to Ground - Vehicle Stopped OR HVIL Shorted to Battery - Vehicle Stopped
+BMS,P1B22,HVIL Opened/Shorted to Ground - Vehicle Moving OR HVIL Shorted to Battery - Vehicle Moving
+BMS,P1B23,High Module (12V) Voltage Level A OR Low Module (12V) Voltage Level A
+BMS,P1B26,LMU power supply circuitry failure
+BMS,P1B27,Thermal Management Poor Performance Level A
+BMS,P1B28,Thermal Management Poor Performance Level B
+BMS,P1B2A,HV or Isolation Self Check Failure
+BMS,P1B2B,Battery/Inverter or Charger Voltage Mismatch
+BMS,P1B2C,Charger Over Current OR Charger Stalled OR Charger voltage limit not respected
+BMS,P1B2D,Charger/Battery Voltage Mismatch
+BMS,P1B2E,Charger Limit Supply Volt Fault Chrgr 1 OR Charger Limit Supply Volt Fault Chrgr 2 OR J1772 A Incorrect Frequency OR J1772 A Invalid Duty Cycle OR J1772 A Pilot with no Prox OR J1772 A Prox with no Pilot OR J1772 B Incorrect Frequency OR J1772 B Invalid Duty Cycle OR J1772 B Pilot with no Prox OR J1772 B Prox with no Pilot OR J1772 A Prox Invalid OR J1772 B Prox Invalid
+BMS,P1B37,Invalid Cell Voltages level A with contactors open
+BMS,P1B38,Vaux 12V Voltage dip detected. Cannot close contactors
+BMS,P1B39,Low Module (12V) Capacity
+BMS,P1B3A,Invalid Cell Voltages level B with contactors open OR Invalid Cell Voltages level B with contactors closed
+BMS,P1B3B,Excessive Temperature Imbalance Level A
+BMS,P1B3C,Excessive Temperature Imbalance Level B
+BMS,P1B3D,Excessive Temperature Imbalance Level C
+BMS,P1B41,1 Thermistor Off Scale Low
+BMS,P1B42,Cell Under Voltage Level A
+BMS,P1B43,Cell Under Voltage Level B
+BMS,P1B44,Cell Under Voltage Level C
+BMS,P1B45,Cell Under Voltage Level D
+BMS,P1B46,Cell Under Voltage Level E
+BMS,P1B47,2+ Thermistor Off Scale Low OR Thermistor Off Scale High
+BMS,P1B48,Cell temperature too low to charge (3 C) OR Cell temperature too low to drive (-17 C)
+BMS,P1B49,Pack Over Voltage
+BMS,P1B4A,Pack Under Voltage
+BMS,P1B4C,Charger Too Many Tries
+BMS,P1B50,2 or more missing Cell Connections. (Cell YY)
+BMS,P1B60,Invalid Cell Temperatures
+BMS,P1B61,Invalid Cell Temperatures
+BMS,P1B72,COM Timeout with LMU Y
+BMS,P1B74,BMS Information DTC
+BMS,U0108,COM Timeout with CHM (0x615)
+BMS,U0146,COM Timeout with GWM (Vehicle Faults - 0x370)
+BMS,U0147,KEY Discrete GWM Mismatch A
+BMS,U0148,KEY Discrete GWM Mismatch B
+BMS,U1075,CAN B Bus No Rx
+BMS,U1B30,Crash Event OR Crash Event Level 6
+DLCM,B2100,Regenerative brake lamp relay circuit
+DLCM,B2101,Reverse lamp relay circuit
+DLCM,C0023,Brake switch lamp relay circuit
+DLCM,C0044,Brake switch fault open
+DLCM,C0081,Anti-Lock Braking System Non-Functional
+DLCM,C2100,Key Interlock Solenoid Drive Electrical Fault OR Key Interlock Solenoid Non Functional
+DLCM,P0120,Accelerator pedal supply voltage fault
+DLCM,P0121,Accelerator pedal sensor fault
+DLCM,P0501,Vehicle speed plausibility fault
+DLCM,P0560,Battery voltage signal too low for High Voltage operation
+DLCM,P0562,Battery voltage signal too low for Drive Line Control Module operation
+DLCM,P0563,Battery voltage signal too high for Drive Line Control Module operation
+DLCM,P0607,Drive Line Control Module Hardware Fault
+DLCM,P0633,Immobilizer password not learned
+DLCM,P0780,Transmission Control Module reaction timeout
+DLCM,P0814,Gear selector LED Circuit electrical problem
+DLCM,P0863,Transmission Control Module fault: CAN bus error
+DLCM,P0885,Transmission Control Module enable relay circuit
+DLCM,P0887,Transmission Control Module enable relay fault closed
+DLCM,P0904,Gear Selector Switch Partial Fault
+DLCM,P0909,Gear Selector Switch Complete Fault
+DLCM,P0920,Transmission Control Module fault: Motor open circuit fault
+DLCM,P0A05,Coolant Pump Loss
+DLCM,P0A1A,Motor Control Module fault: Inverter_Fault
+DLCM,P0A1B,Motor Control Module fault: Analog to Digital Converter Calibration_Problem
+DLCM,P0A1C,Motor Control Module fault: BadDriver
+DLCM,P0A2F,Motor Control Module fault: Stator_Over_Temperature
+DLCM,P0A35,Motor Control Module fault: Rotor_Over_Temperature
+DLCM,P0A3C,Motor Control Module fault: IGBT_Over_Temperature
+DLCM,P0A3D,Motor Control Module fault: Coolant_Loss_Detected
+DLCM,P0A3F,Motor Control Module fault: BadPositionSignal
+DLCM,P0A44,Motor Control Module fault: Over_Speed_Alarm
+DLCM,P0A4A,Motor Control Module fault: Over_Speed_Warning
+DLCM,P0A51,Motor Control Module fault: Current Sensor Fault
+DLCM,P0A55,Motor Control Module fault: PhaseCurrentSensorError
+DLCM,P0A78,Motor Control Module fault: MotorStalled
+DLCM,P0A79,Motor Control Module fault: Over_Phase_Advance
+DLCM,P0A8F,Battery voltage signal indicates DC/DC is not operational
+DLCM,P0AFA,High Voltage Battery Voltage too low for Motor Operation
+DLCM,P0C0B,Motor Control Module fault: Invalid12V
+DLCM,P0C19,Motor Control Module fault: Forced_Voltage_Control
+DLCM,P0C1A,Motor Control Module fault: ForcedOpenLoop
+DLCM,P0C79,Motor Control Module fault: Over_Voltage_Alarm
+DLCM,P0C7A,Motor Control Module fault: Over_Voltage_Warning
+DLCM,P2510,Self Power Enable relay fault closed
+DLCM,P2530,Ignition input plusibility
+DLCM,P3100,Motor Control Module enable relay circuit
+DLCM,P3101,Motor Control Module enable relay fault closed
+DLCM,P3102,Immobilizer fault
+DLCM,P3103,Battery Management System exited high voltage while running
+DLCM,P3104,Charge Cable Plugged in While in READY mode
+DLCM,P3105,Charge Cable Plugged in while vehicle moving
+DLCM,P3106,Crash Detected
+DLCM,P3107,Telematics Commanded Lockout
+DLCM,P3108,Motor Control Module fault: Under_Voltage_Warning
+DLCM,P3109,Transmission Control Module fault: Motor stalled in middle position
+DLCM,P3110,Transmission Control Module fault: Motor stalled in park position
+DLCM,P3111,Transmission Control Module fault: Motor stalled in unpark position
+DLCM,P3112,Transmission Control Module request not realized
+DLCM,P3113,Transmission Control Module un-commanded state change
+DLCM,P3114,System safety critical disable system fault level 1
+DLCM,P3115,System safety critical disable Drive Line Control Module fault level 2
+DLCM,P3116,System safety critical disable system fault level 2
+DLCM,P3739,Transmission Control Module fault: Hall sensor fault
+DLCM,P3764,Transmission Control Module fault: Electronic Control Unit board over temperature
+DLCM,U0101,Lost Communication with Transmission Control Module
+DLCM,U0110,Lost Communication with Motor Control Module
+DLCM,U0111,Lost Communication With Battery Management System through Gateway Module
+DLCM,U0116,"Lost Communication With Heating, Ventilation and Air Conditioning Module through Gateway Module"
+DLCM,U0122,Lost Communication With Electronic Stability Control Module
+DLCM,U0127,Lost Communication With Tire Pressure Monitoring/ Immobilizer Module
+DLCM,U0146,Lost Communication With Gateway Module
+DLCM,U0151,Lost Communication With SRS (Airbag Control Module) through Gateway Module
+DLCM,U0155,Lost Communication With Instrumentation Pack through Gateway Module
+DLCM,U0162,Lost Communication With Telematics through Gateway Module
+DLCM,U0298,Lost Communication With DC/DC through Gateway Module
+DLCM,U0401,Motor Control Module fault: Torque Command Counter Fault
+DLCM,U0402,Invalid parkLock Signal Received from Transmission Control Module
+DLCM,U0411,Invalid AccurateSpeed Signal Received from Motor Control Module
+DLCM,U0412,Invalid Chargemode Signal Received from Gateway Module (Battery Management System)
+DLCM,U0413,Invalid Signals Received from Gateway Module (Battery Management System) during Cranking
+DLCM,U0415,Invalid BrakePressureFilter Signal Received from Electronic Stability Control Module
+DLCM,U0416,Invalid Torque Limit Signals Received from Electronic Stability Control Module
+DLCM,U0418,Invalid Vehicle Speed Signal Received from Electronic Stability Control Module
+DLCM,U0423,Invalid Interior illumination Signal Received from Gateway Module (Instrumentation Pack)
+DLCM,U0424,Invalid Heater Power Consumption Signal Received from Gateway Module (Heating Ventilation and Air Conditioning)
+DLCM,U0442,Motor Control Module fault: Torque Command Corrupted fault
+DLCM,U0447,Invalid Heartbeat / Shutdown signal received from Gateway Module
+DLCM,U0448,Invalid Signals Received from Gateway Module during Cranking
+DLCM,U0466,Invalid AC compressor Power Consumption Signal Received from Gateway Module (Heating Ventilation and Air Conditioning)
+DLCM,U0499,Invalid Lockdown Signals Received from Gateway Module (Telematics)
+DLCM,U0551,Invalid Supplemental Restraint System Crash Output Signal Received from Gateway Module (Supplemental Restraint System)
+DLCM,U0593,Invalid AccurateCurrent Signal Received from Motor Control Module
+DLCM,U0599,Invalid HighVoltage Input Current Signal Received from Gateway Module (DC/DC)
+DLCM,U059C,Invalid Torque Limit Signals Received from Motor Control Module
+DLCM,U1073,Motor CAN Bus Off
+DLCM,U1074,Drive Line CAN Bus Off
+DLCM,U2100,Transmission Control Module fault: Drive Line Control Module CAN message lost
+DLCM,U2107,Drive Line CAN Staying Active after Ignition Off
+DLCM,U210F,Invalid Wheel Speed Signal Received from Electronic Stability Control Module
+DLCM,U2110,Invalid Anti-Lock Braking System Lamp Request
+DLCM,U2111,Invalid Anti Lock Braking System Brake Event Signal Received from Electronic Stability Control Module
+DLCM,U2119,Invalid Current Limit Signals Received from Gateway Module (Battery Management System)
+DLCM,U3006,Self Power Enable relay circuit
+Gateway,B1101,Battery voltage high
+Gateway,B1102,Battery voltage low
+Gateway,B2019,DCDC: DTC 14 - Heat Plate Temperature Fault
+Gateway,B2100,DCDC: DTC 8 - Buck On Voltage Fault – Low
+Gateway,B2101,DCDC: DTC 2 - High Voltage Fault – High
+Gateway,B2102,DCDC: DTC 3 - High Voltage Fault – Low
+Gateway,B2104,DCDC: DTC 9 - UNUSED
+Gateway,B2105,DCDC: DTC 10 - UNUSED
+Gateway,B2106,DCDC: DTC 11 - UNUSED
+Gateway,B2107,DCDC: DTC 12 - Boost On Hi Voltage Fault – Low
+Gateway,B2108,DCDC: DTC 13 - Loss of COM (3 Second Timeout) Low
+Gateway,B210A,DCDC: DTC 15 - 14V Current Diagnostic
+Gateway,B210B,DCDC: DTC 16 - Current Balance Diagnostic
+Gateway,B210C,DCDC: DTC 17 - 14V ILIM Diagnostic
+Gateway,B210D,DCDC: DTC 18 - ILIM Occurred Indication
+Gateway,B210E,DCDC: DTC 19 - UNUSED
+Gateway,B210F,DCDC: DTC 20 - UNUSED
+Gateway,B2111,DCDC: DTC 6 - Low Voltage Fault – High
+Gateway,B2112,DCDC: DTC 7 - Low Voltage Fault – Low
+Gateway,B2114,DCDC: DTC 21 - UNUSED
+Gateway,B2115,DCDC: DTC 22 - UNUSED
+Gateway,B2116,DCDC: DTC 23 - UNUSED
+Gateway,B2117,DCDC: DTC 24 - UNUSED
+Gateway,B2118,DCDC: DTC 25 - UNUSED
+Gateway,B2119,DCDC: DTC 26 - UNUSED
+Gateway,B211A,DCDC: DTC 27 - UNUSED
+Gateway,B211B,DCDC: DTC 28 - UNUSED
+Gateway,B211C,DCDC: DTC 29 - UNUSED
+Gateway,B211D,DCDC: DTC 30 - UNUSED
+Gateway,B211E,DCDC: DTC 31 - UNUSED
+Gateway,B211F,DCDC: DTC 4 - UNUSED
+Gateway,B2120,DCDC: DTC 5 - UNUSED
+Gateway,B2121,DCDC: DTC 0 - Low Voltage System Fault
+Gateway,B2122,DCDC: DTC 1 - UNUSED
+Gateway,B2222,VehicleFaultSeverity threshold exected
+Gateway,B2223,SRS Crash Flag Is Set
+Gateway,P2533,Invalid Ignition Input Combination
+Gateway,U0002,Invalid Bus Detected In Forwarding Rule OR Brake Fault Detected 1 OR Brake Fault Detected 2 OR Brake Fault Detected 3 OR Hot Restart Detected
+Gateway,U0037,CAN Bus Failure Detected
+Gateway,U0101,Missing Node <TCM>
+Gateway,U0108,Missing Node <CHM>
+Gateway,U0110,Missing Node <DLCM>
+Gateway,U0111,Missing Node <BMS>
+Gateway,U0112,Missing Node <DCDC>
+Gateway,U0122,Missing Node <ESC>
+Gateway,U0127,Missing Node <RCU>
+Gateway,U0131,Missing Node <PSM>
+Gateway,U0151,Missing Node <SRS>
+Gateway,U0155,Missing Node <IPK>
+Gateway,U0164,Missing Node <HVAC>
+Gateway,U0198,Missing Node <TEM>
+Gateway,U100A,Invalid PowerMode change detected
+Gateway,U1074,D CAN Bus Off
+Gateway,U1075,B CAN Bus Off
+Gateway,U1076,Diag CAN Bus Off
+Gateway,U1164,Missing Node <ACCM>
+Gateway,U300B,Invalid Accessory Key position detected
+Gateway,U300D,Invalid Ignition On Key position detected
+PowerSteering,C1302,Steering angle sensor not trimmed
+PowerSteering,C1324,Module Config. Failure
+PowerSteering,C1901,Battery Voltage low
+PowerSteering,C1902,Battery Voltage High
+PowerSteering,U1000,Bus off Fault
+PowerSteering,U1027,"Missing ECU Message, (DTC shall be inhibited if battery voltage is not in the range 9-16 volts)"
+RCU,INVALID KEY,Invalid Key (Authentication KO)
+RCU,LEFT FRONT,Wheel 0 battery alert OR Wheel 0 fault alert OR Wheel 0 dead sensor
+RCU,LEFT REAR,Wheel 4 battery alert OR Wheel 4 fault alert OR Wheel 4 dead sensor
+RCU,NOT USED,Wheel 6 battery alert OR Wheel 5 battery alert OR Wheel 2 battery alert OR Wheel 1 battery alert OR Wheel 6 fault alert OR Wheel 5 fault alert OR Wheel 2 fault alert OR Wheel 1 fault alert OR Wheel 6 dead sensor OR Wheel 5 dead sensor OR Wheel 2 dead sensor OR Wheel 1 dead sensor
+RCU,RCU FAULT,RCU Fault (RF Only)
+RCU,RIGHT FRONT,Wheel 3 battery alert OR Wheel 3 fault alert OR Wheel 3 dead sensor
+RCU,RIGHT REAR,Wheel 7 battery alert OR Wheel 7 fault alert OR Wheel 7 dead sensor
+Airbag,B1382,Passenger side airbag squib circuit High Resistance
+Airbag,B2505,Passenger Airbag Deactivate (PAD) Warning Lamp Circuit Failure
+HVAC,B111D,Battery Evap Air Off temperature sensor fault
+HVAC,B112D,Cabin Airmix motor fault
