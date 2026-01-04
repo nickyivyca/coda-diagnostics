@@ -398,5 +398,7 @@ RCU,RIGHT FRONT,Wheel 3 battery alert OR Wheel 3 fault alert OR Wheel 3 dead sen
 RCU,RIGHT REAR,Wheel 7 battery alert OR Wheel 7 fault alert OR Wheel 7 dead sensor
 Airbag,B1382,Passenger side airbag squib circuit High Resistance
 Airbag,B2505,Passenger Airbag Deactivate (PAD) Warning Lamp Circuit Failure
+Airbag,B1102,Battery voltage low
 HVAC,B111D,Battery Evap Air Off temperature sensor fault
 HVAC,B112D,Cabin Airmix motor fault
+ACCompressor,U0155,Lost Communication With Instrument Panel Cluster (IPC) Control Module

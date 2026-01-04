@@ -241,19 +241,42 @@ def parse_eps(raw):
 
 
 def parse_abs(raw):
-    # After uds18+recv_isotp, payload should start at 0x58
+    """
+    Parse ABS UDS-18 DTC response.
+    Expected payload (after ISO-TP reassembly):
+        58 <status_mask> <DTC_H> <DTC_L> <status> ...
+    Continental ABS encodes status bits in the high byte (0x40, 0x80).
+    These must be stripped to recover the true DTC family.
+    """
+
+    # Must begin with positive response 0x58
     if not raw or raw[0] != 0x58:
         raise ValueError("Bad ABS")
+
     status_mask = raw[1]
     dtc_bytes = raw[2:]
+
     out = []
     i = 0
-    while i + 2 < len(dtc_bytes):
-        dtc = (dtc_bytes[i] << 8) | dtc_bytes[i+1]
-        st = dtc_bytes[i+2]
+
+    while i + 1 < len(dtc_bytes):
+        # Extract raw DTC bytes
+        hi = dtc_bytes[i]
+        lo = dtc_bytes[i+1]
+
+        # Strip ABS status bits (0x40, 0x80)
+        hi &= 0x3F
+
+        dtc = (hi << 8) | lo
+
+        # Status byte is optional; default to 0x00 if missing
+        st = dtc_bytes[i+2] if i + 2 < len(dtc_bytes) else 0x00
+
         out.append((dtc, st))
         i += 3
+
     return status_mask, out
+
 
 
 def parse_airbag(raw):
