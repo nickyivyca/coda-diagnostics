@@ -179,6 +179,28 @@ def uds_read(bus, did):
 
 
 # -----------------------------------------------------------------------------
+# Column formatting
+# -----------------------------------------------------------------------------
+
+def print_in_columns(values, per_col, label):
+    total = len(values)
+    cols = (total + per_col - 1) // per_col
+
+    print(f"\n=== {label} ===")
+
+    for row in range(per_col):
+        line = []
+        for col in range(cols):
+            idx = col * per_col + row
+            if idx < total:
+                v = values[idx]
+                line.append(f"{idx+1:03d}: {v}")
+            else:
+                line.append("")
+        print("   ".join(x.ljust(14) for x in line))
+
+
+# -----------------------------------------------------------------------------
 # Main
 # -----------------------------------------------------------------------------
 
@@ -203,13 +225,8 @@ def main():
         raw_t = uds_read(bus, 0x8778)
         temps = parse_temperatures(raw_t)
 
-        print("\n=== Cell Voltages (104s) ===")
-        for i, v in enumerate(cells, 1):
-            print(f"Cell {i:03d}: {v:.3f} V")
-
-        print("\n=== Cell Temperatures (28 sensors) ===")
-        for i, t in enumerate(temps, 1):
-            print(f"Temp {i:02d}: {t} °C (raw)")
+        print_in_columns([f"{v:.3f} V" for v in cells], 26, "Cell Voltages (104s)")
+        print_in_columns([f"{t} °C" for t in temps], 7, "Cell Temperatures (28 sensors)")
 
     finally:
         safe_shutdown(bus)
