@@ -1,5 +1,6 @@
 import time
 import can
+import isotp
 import argparse
 import logging
 import csv
@@ -130,74 +131,45 @@ def create_bus(interface, channel):
     return can.interface.Bus(interface=interface, channel=channel, bitrate=BITRATE)
 
 
-def send_isotp_sf(bus, req_id, payload):
-    pci = 0x00 | len(payload)
-    data = bytes([pci]) + payload
-    data = data.ljust(8, b"\x00")
-    logger.debug(f"CAN TX {req_id:03X} {data.hex()}")
-    bus.send(can.Message(arbitration_id=req_id, data=data, is_extended_id=False))
-
-
-def send_isotp_fc(bus, req_id):
-    data = bytes([0x30, 0x00, 0x00]) + b"\x00" * 5
-    logger.debug(f"CAN TX {req_id:03X} {data.hex()} (FC)")
-    bus.send(can.Message(arbitration_id=req_id, data=data, is_extended_id=False))
-
-
-def recv_isotp(bus, resp_id, req_id, timeout=5.0):
-    buf = b""
-    exp = None
-    sn = 1
+def recv_isotp_stack(stack, timeout=5.0):
+    """Poll isotp stack until a complete response is ready. Discards UDS 0x78 pending frames."""
     start = time.time()
     while True:
         if time.time() - start > timeout:
-            return buf
-        msg = bus.recv(timeout=0.5)
-        if msg is None or msg.arbitration_id != resp_id:
-            continue
-        logger.debug(f"CAN RX {msg.arbitration_id:03X} {msg.data.hex()}")
-        d = bytes(msg.data)
-        pci = d[0]
-        ft = pci & 0xF0
-
-        if ft == 0x00:
-            # Single frame: payload starts at d[1]
-            ln = pci & 0x0F
-            p = d[1:1 + ln]
-
-            # Filter UDS response pending: 7F xx 78
-            if len(p) >= 3 and p[0] == 0x7F and p[2] == 0x78:
+            return b""
+        stack.process()
+        if stack.available():
+            payload = bytes(stack.recv())
+            if len(payload) >= 3 and payload[0] == 0x7F and payload[2] == 0x78:
+                logger.debug("Response pending (7F xx 78), waiting...")
                 continue
+            return payload
+        time.sleep(0.001)
 
-            return p
 
-        if ft == 0x10:
-            # First frame
-            exp = ((pci & 0x0F) << 8) | d[1]
-            buf = d[2:]
-            send_isotp_fc(bus, req_id)
-            continue
-
-        if ft == 0x20:
-            # Consecutive frame
-            if (pci & 0x0F) != (sn & 0x0F):
-                raise ValueError("Bad SN")
-            sn += 1
-            buf += d[1:]
-            if exp and len(buf) >= exp:
-                return buf[:exp]
-
+def _isotp_request(bus, req_id, resp_id, payload):
+    """Create a per-request CanStack, send payload, return reassembled response bytes."""
+    addr = isotp.Address(
+        isotp.AddressingMode.Normal_11bits,
+        txid=req_id,
+        rxid=resp_id,
+    )
+    params = {
+        "stmin": 0,       # STmin in our FC: tell ECU to send CFs as fast as possible
+        "blocksize": 0,   # blocksize in our FC: no second FC needed (matches current 30 00 00)
+        "tx_padding": 0,  # pad all TX frames to 8 bytes with 0x00 (matches current behavior)
+    }
+    stack = isotp.CanStack(bus=bus, address=addr, params=params)
+    stack.send(payload)
+    return recv_isotp_stack(stack)
 
 
 def uds19(bus, req, resp):
-    send_isotp_sf(bus, req, bytes([0x19, 0x02, 0x0C]))
-    return recv_isotp(bus, resp, req)
+    return _isotp_request(bus, req, resp, bytes([0x19, 0x02, 0x0C]))
 
 
 def uds18(bus, req, resp, subfunc, mask):
-    payload = bytes([0x18, subfunc, mask, 0x00])
-    send_isotp_sf(bus, req, payload)
-    return recv_isotp(bus, resp, req)
+    return _isotp_request(bus, req, resp, bytes([0x18, subfunc, mask, 0x00]))
 
 
 def parse_bms(raw):
@@ -375,19 +347,31 @@ def main():
     p.add_argument("--debug", action="store_true")
     p.add_argument("--debug-can-dongle", action="store_true")
     p.add_argument("--show-statuses", action="store_true")
+    p.add_argument("--interface", default=None,
+                   help="Override auto-detected CAN interface (e.g. socketcan, kvaser)")
+    p.add_argument("--channel", default=None,
+                   help="Override auto-detected CAN channel (e.g. vcan0, 0)")
     a = p.parse_args()
 
     configure_logging(a.debug, a.debug_can_dongle)
     db = load_dtc_csv()
 
-    try:
-        iface, ch = detect_can_interface()
-    except Exception as e:
-        print(f"Error detecting CAN interface: {e}")
-        return
+    if a.interface is not None and a.channel is not None:
+        iface = a.interface
+        try:
+            ch = int(a.channel)   # numeric for ixxat/kvaser
+        except ValueError:
+            ch = a.channel        # string for socketcan (vcan0) / pcan (PCAN_USBBUS1)
+        print(f"Using interface={iface}, channel={ch}")
+    else:
+        try:
+            iface, ch = detect_can_interface()
+        except Exception as e:
+            print(f"Error detecting CAN interface: {e}")
+            return
+        print(f"Using interface={iface}, channel={ch}")
 
     bus = create_bus(iface, ch)
-    print(f"Using interface={iface}, channel={ch}")
 
     try:
         for name, ids in MODULES.items():
