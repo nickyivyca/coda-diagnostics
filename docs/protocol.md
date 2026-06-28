@@ -10,10 +10,10 @@ encoding layers that sit above the ISO-TP transport.
 | Module        | Request ID | Response ID | UDS service | Notes                        |
 |---------------|-----------|-------------|-------------|------------------------------|
 | BMS           | 0x722     | 0x72A       | 0x19 02 0C  | 24-bit DTC entries           |
-| DLCM          | 0x7E0     | 0x7E8       | 0x19 02 0C  | 16-bit DTC, DLCM encoding    |
-| Gateway       | 0x710     | 0x718       | 0x19 02 0C  | 16-bit, chassis16 decode     |
-| HVAC          | 0x750     | 0x758       | 0x19 02 0C  | 16-bit, chassis16 decode     |
-| ACCompressor  | 0x7C7     | 0x7CF       | 0x19 02 0C  | 16-bit, DLCM decode          |
+| DLCM          | 0x7E0     | 0x7E8       | 0x19 02 0C  | 16-bit SAE (dec_sae16)       |
+| Gateway       | 0x710     | 0x718       | 0x19 02 0C  | 16-bit SAE (dec_sae16)       |
+| HVAC          | 0x750     | 0x758       | 0x19 02 0C  | 16-bit SAE (dec_sae16)       |
+| ACCompressor  | 0x7C7     | 0x7CF       | 0x19 02 0C  | 16-bit SAE (dec_sae16)       |
 | PowerSteering | 0x724     | 0x734       | 0x19 02 0C  | 16-bit EPS encoding          |
 | ABS           | 0x784     | 0x785       | 0x18 00 FF  | UDS-18 (not 19); 16-bit DTC  |
 | Airbag        | 0x7C4     | 0x7CC       | 0x18 02 FF  | UDS-18; sends 0x78 pending   |
@@ -50,44 +50,45 @@ The third byte (`b2`, which becomes the low byte of `d`) is an artifact of how
 the 3-byte read works; it carries part of the real payload but is ignored in
 the decode because the BMS DTC space only uses the first two nibble pairs.
 
-### 2.2 DLCM / Gateway / HVAC / ACCompressor — `parse_dlcm` / `dec_dlcm`
+### 2.2 DLCM / Gateway / HVAC / ACCompressor / Airbag — `dec_sae16`
 
-Response layout:
-
-```
-59 02 [b0 b1 b2 status] ...
-```
-
-Note the **absence of a mask byte** between `59 02` and the first DTC entry,
-which is why `parse_dlcm` starts at `i=2` (not `i=3` as in `parse_bms`):
+These modules all encode DTCs as **standard SAE J2012 two-byte codes**. After
+ISO-TP reassembly the response is a positive `59 02` (UDS-19) or `58` (UDS-18)
+followed by per-DTC records. `parse_dlcm` reads 4-byte records as a 24-bit DTC
+word plus a status byte:
 
 ```python
 i = 2
 dtc = (raw[i] << 16) | (raw[i+1] << 8) | raw[i+2]
 ```
 
-`dec_dlcm` then isolates the lower 16 bits and strips the proprietary bit-14
-status flag before decoding the system/severity prefix:
+`dec_sae16` keeps only the low 16 bits and decodes them directly — no bit
+masking:
 
 ```python
-x = d & 0xFFFF        # discard the upper byte read in b0
-x2 = x & ~0x4000      # strip bit 14 (Continental status flag)
-s = (x2 >> 12) & 0xF  # top nibble → system prefix
+x = d & 0xFFFF
+s = (x >> 12) & 0xF
+letter = "PCBU"[(s >> 2) & 0x3]  # top 2 bits: 00=P 01=C 10=B 11=U
+first  = s & 0x3                 # next 2 bits: first digit 0-3
+rest   = x & 0x0FFF              # last three hex digits
+# -> f"{letter}{first}{rest:03X}"
 ```
 
-**Why `d & 0xFFFF`**: `parse_dlcm` reads 3 bytes into a 24-bit int; the DLCM
-DTC is encoded in the middle and lower bytes only. The upper byte (`b0`) is a
-mask/overhead byte and is discarded here.
+**Why `d & 0xFFFF`**: `parse_dlcm` reads a 24-bit int; only the low 16 bits
+(the middle and low bytes) carry the DTC. The upper byte lands on the UDS
+availability-mask byte / preceding status byte and is discarded.
 
-**Why `& ~0x4000`**: Continental DLCM sets bit 14 of the 16-bit DTC word to
-indicate a specific fault category. This bit must be masked out before the
-system-prefix nibble (`s`) is decoded, or the wrong service category is returned.
+Wire examples (real Coda log):
+- `0x40 0x44` → `x = 0x4044`, `s = 0x4` → letter `C`, first `0`, rest `0x044`
+  → **`C0044`**
+- `0xC1 0x10` → `x = 0xC110`, `s = 0xC` → letter `U`, first `0` → **`U0110`**
+- `0xD0 0x74` → `x = 0xD074`, `s = 0xD` → letter `U`, first `1` → **`U1074`**
 
-Wire example: `0x40 0x81 0x5A 0x8C`
-- `d = 0x40815A`
-- `x = 0x815A`
-- `x2 = 0x015A` (bit 14 stripped)
-- `s = 0x0` → `"P0"` prefix → result `"P015A"`
+> **History:** earlier `dec_dlcm`/`dec_chassis16` used per-nibble lookup tables
+> plus a `& ~0x4000` "strip Continental bit-14" step. That step was wrong — bit
+> 14 is part of the SAE category encoding (e.g. `0x4044` = `C0044`), so stripping
+> it turned C-codes into P-codes (`C0044` printed as `P0044`) and left U-codes
+> with category `?`. The single `dec_sae16` decoder replaces both.
 
 ### 2.3 ABS — `parse_abs` / `dec_abs`, UDS-18 response
 
@@ -113,7 +114,7 @@ if hi == 0x02:
     return f"C22{sw:02X}"
 ```
 
-### 2.4 Airbag — `parse_airbag` / `dec_chassis16`, UDS-18 + 0x78 pending
+### 2.4 Airbag — `parse_airbag` / `dec_sae16`, UDS-18 + 0x78 pending
 
 The Airbag ECU always sends a UDS response-pending frame first:
 
@@ -129,16 +130,15 @@ if len(payload) >= 3 and payload[0] == 0x7F and payload[2] == 0x78:
     continue
 ```
 
-Airbag DTC bytes have `0x80` OR'd into the high byte (distinct from ABS's `0x40`).
-`parse_airbag` does **not** strip these — `dec_chassis16` handles the full encoded
-value correctly because `(x >> 12) & 0xF` lands in the `8..B` range, which maps
-to the `"B"` system prefix.
+Airbag DTC bytes are plain SAE J2012 two-byte codes; `parse_airbag` builds the
+16-bit word and `dec_sae16` decodes it. No high-byte stripping is needed — the
+top 2 bits of the high nibble already carry the category. Real-log examples:
+`0x91 0x02` → `B1102`, `0xD1 0x10` → `U1110`, `0xC1 0x10` → `U0110`.
 
-### 2.5 HVAC — `parse_dlcm` / `dec_chassis16`
+### 2.5 HVAC — `parse_dlcm` / `dec_sae16`
 
-HVAC uses the same UDS-19 response format as DLCM but is decoded with
-`dec_chassis16` (not `dec_dlcm`), because HVAC uses `0x80`-prefixed high bytes
-(same as Airbag) rather than the DLCM bit-14 pattern.
+HVAC uses the same UDS-19 response format as DLCM and is decoded with the same
+`dec_sae16`.
 
 ### 2.6 PowerSteering (EPS) — `parse_eps` / `dec_eps`
 

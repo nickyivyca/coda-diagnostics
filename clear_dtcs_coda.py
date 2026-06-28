@@ -9,7 +9,8 @@ MODULES = {
     "BMS":          {"req": 0x722, "resp": 0x72A, "type": "uds14"},
     "DLCM":         {"req": 0x7E0, "resp": 0x7E8, "type": "uds14"},
     "Gateway":      {"req": 0x710, "resp": 0x718, "type": "uds14"},
-    "Airbag":       {"req": 0x7C4, "resp": 0x7CC, "type": "uds14_ignition_cycle"},
+    "Airbag":       {"req": 0x7C4, "resp": 0x7CC, "type": "uds14_ignition_cycle",
+                     "clear_req": bytes([0x14, 0xFF, 0x00])},
     "HVAC":         {"req": 0x750, "resp": 0x758, "type": "uds14"},
     "DCDC":         {"req": 0x710, "resp": 0x718, "type": "uds14"},
     "ACCompressor": {"req": 0x7C7, "resp": 0x7CF, "type": "uds14"},
@@ -115,8 +116,10 @@ def recv_isotp(bus, resp_id, req_id, timeout=5.0):
             if exp and len(buf) >= exp:
                 return buf[:exp]
 
-def uds14_clear(bus, req, resp):
-    send_isotp_sf(bus, req, bytes([0x14, 0xFF, 0xFF, 0xFF]))
+def uds14_clear(bus, req, resp, payload=bytes([0x14, 0xFF, 0xFF, 0xFF])):
+    # Default ISO-14229 groupOfDTC = 0xFFFFFF (all). KWP2000-style modules
+    # (Airbag) use a 2-byte group via per-module "clear_req" override.
+    send_isotp_sf(bus, req, payload)
     return recv_isotp(bus, resp, req)
 
 def uds19_read(bus, req, resp):
@@ -169,7 +172,8 @@ def clear_module(bus, name, ids):
     print(f"\n=== Clearing {name} ===")
     try:
         if ids["type"] == "uds14":
-            r = uds14_clear(bus, ids["req"], ids["resp"])
+            r = uds14_clear(bus, ids["req"], ids["resp"],
+                            ids.get("clear_req", bytes([0x14, 0xFF, 0xFF, 0xFF])))
             if not r:
                 print(f"  {name}: No response to clear command")
                 return "fail"
@@ -193,7 +197,8 @@ def clear_module(bus, name, ids):
             return "ok"
 
         if ids["type"] == "uds14_ignition_cycle":
-            r = uds14_clear(bus, ids["req"], ids["resp"])
+            r = uds14_clear(bus, ids["req"], ids["resp"],
+                            ids.get("clear_req", bytes([0x14, 0xFF, 0xFF, 0xFF])))
             if not r:
                 print(f"  {name}: No response to clear command")
                 return "fail"

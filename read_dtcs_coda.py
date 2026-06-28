@@ -273,36 +273,23 @@ def dec_bms(d):
     return f"P{(b0>>4):X}{(b0&0xF):X}{(b1>>4):X}{(b1&0xF):X}"
 
 
-def dec_dlcm(d):
-    x = d & 0xFFFF
-    x2 = x & ~0x4000
-    s = (x2 >> 12) & 0xF
-    d2 = (x2 >> 8) & 0xF
-    d3 = (x2 >> 4) & 0xF
-    d4 = x2 & 0xF
-    if s == 0x8:
-        return f"U0{d2:X}{d3:X}{d4:X}"
-    if s == 0x0:
-        return f"P0{d2:X}{d3:X}{d4:X}"
-    if s == 0x1:
-        return f"C0{d2:X}{d3:X}{d4:X}"
-    if s == 0x2:
-        return f"C2{d2:X}{d3:X}{d4:X}"
-    if s == 0x3:
-        return f"P3{d2:X}{d3:X}{d4:X}"
-    return f"?{s:X}{d2:X}{d3:X}{d4:X}"
+def dec_sae16(d):
+    """
+    Decode a standard SAE J2012 two-byte DTC into its 5-character string.
 
+    The high nibble of the 16-bit word encodes the category in its top 2 bits
+    (00=P, 01=C, 10=B, 11=U) and the first digit (0-3) in its low 2 bits; the
+    remaining three nibbles are the last three hex digits.
 
-def dec_chassis16(d):
-    # Generic 16‑bit chassis style mapping (used by Gateway, HVAC, Airbag)
+    Used by DLCM, Gateway, HVAC, ACCompressor and Airbag -- all encode DTCs
+    identically once the 16-bit word is isolated (the low 16 bits of d).
+    """
     x = d & 0xFFFF
     s = (x >> 12) & 0xF
-    sys = "B" if s in (8, 9, 0xA, 0xB) else "?"
-    pref = "1" if s in (8, 9) else ("2" if s in (0xA, 0xB) else "1")
-    d1 = (x >> 8) & 0xF
-    d2 = (x >> 4) & 0xF
-    d3 = x & 0xF
-    return f"{sys}{pref}{d1:X}{d2:X}{d3:X}"
+    letter = "PCBU"[(s >> 2) & 0x3]
+    first = s & 0x3
+    rest = x & 0x0FFF
+    return f"{letter}{first}{rest:03X}"
 
 
 def dec_eps(d):
@@ -328,7 +315,7 @@ def dec_abs(d):
         sw = ((lo & 0x0F) << 4) | ((lo & 0xF0) >> 4)
         return f"C22{sw:02X}"
 
-    # 0x62xx family → C22xx (ABS quirk)
+    # 0x62xx family -> C22xx (ABS quirk)
     if hi == 0x62:
         return f"C22{lo:02X}"
 
@@ -406,23 +393,20 @@ def main():
                 for d, st in dtcs:
                     if name == "BMS":
                         code = dec_bms(d)
-                    elif name == "Airbag":
-                        code = dec_chassis16(d)
                     elif name == "ABS":
                         code = dec_abs(d)
-                    elif name in ("Gateway", "HVAC"):
-                        code = dec_chassis16(d)
                     elif name == "PowerSteering":
                         code = dec_eps(d)
                     else:
-                        code = dec_dlcm(d)
+                        # Airbag, Gateway, HVAC, DLCM, ACCompressor: standard SAE J2012
+                        code = dec_sae16(d)
 
                     desc = db.get(name, {}).get(code, "Unknown DTC")
 
                     if a.show_statuses:
-                        print(f"  {code} – {desc} (status=0x{st:02X})")
+                        print(f"  {code} - {desc} (status=0x{st:02X})")
                     else:
-                        print(f"  {code} – {desc}")
+                        print(f"  {code} - {desc}")
 
             except Exception as e:
                 print(f"Error reading {name}: {e}")
