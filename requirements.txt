@@ -1,2 +1,10 @@
 python-can>=4.0.0
 can-isotp>=2.0.0
+
+# gs_usb / candleLight dongles (Innomaker USB2CAN) support on Windows.
+# The device needs no vendor driver (WinUSB auto-binds via its WCID
+# descriptors); these provide the gs_usb backend and a bundled libusb-1.0.dll
+# that detect_can_interface() injects onto the DLL search path at runtime.
+gs_usb>=0.3.1
+pyusb>=1.3.1
+libusb-package>=1.0.26.4

@@ -44,11 +44,39 @@ def safe_shutdown(bus):
     try: bus.close()
     except: pass
 
+_gs_usb_ready = None
+def _ensure_gs_usb_libusb():
+    """Make libusb-package's bundled libusb-1.0.dll discoverable to pyusb so
+    the gs_usb backend can open Innomaker/candleLight dongles on Windows.
+    The device needs no vendor driver (WinUSB auto-binds via WCID)."""
+    global _gs_usb_ready
+    if _gs_usb_ready is not None:
+        return _gs_usb_ready
+    try:
+        import os, libusb_package
+        d = os.path.dirname(libusb_package.get_library_path())
+        if hasattr(os, "add_dll_directory"):
+            os.add_dll_directory(d)
+        os.environ["PATH"] = d + os.pathsep + os.environ.get("PATH", "")
+    except: pass
+    try:
+        import usb.backend.libusb1
+        _gs_usb_ready = usb.backend.libusb1.get_backend() is not None
+    except:
+        _gs_usb_ready = False
+    return _gs_usb_ready
+
 def detect_can_interface():
     try:
         b = can.interface.Bus(interface="ixxat", channel=0, bitrate=BITRATE)
         safe_shutdown(b)
         return "ixxat", 0
+    except: pass
+    try:
+        if _ensure_gs_usb_libusb():
+            from gs_usb.gs_usb import GsUsb
+            if len(GsUsb.scan()) > 0:
+                return "gs_usb", 0
     except: pass
     for ch in ["PCAN_USBBUS1", "PCAN_USBBUS2"]:
         try:
