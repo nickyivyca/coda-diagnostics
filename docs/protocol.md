@@ -189,7 +189,7 @@ Verify with `ip link show vcan0`.
 ### Running
 
 ```bash
-pip install python-can python-can-isotp pytest
+pip install -r requirements.txt pytest
 pytest test_regression.py -v
 ```
 

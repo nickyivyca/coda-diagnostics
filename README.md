@@ -19,6 +19,17 @@ Currently supported/tested CAN dongles:
 - Kvaser (Windows)
 - Ixxat (Windows)
 - PCAN (Windows)
+- gs_usb / candleLight, e.g. Innomaker USB2CAN (Windows)
 - Socketcan (Linux)
 
 Any CAN dongle supported by the Python CAN library should be able to be implemented however.
+
+## Setup
+
+Install dependencies with `pip install -r requirements.txt`.
+
+The Innomaker USB2CAN (gs_usb firmware) needs **no vendor driver** on Windows —
+it binds to WinUSB automatically via its WCID descriptors, so there is **no
+Zadig step**. The `libusb-package` dependency bundles the `libusb-1.0.dll` that
+pyusb needs, and `detect_can_interface()` puts it on the DLL search path at
+runtime. It is probed after ixxat and before kvaser during auto-detection.
