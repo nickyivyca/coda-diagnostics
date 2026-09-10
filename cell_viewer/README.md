@@ -109,3 +109,20 @@ python -m pytest test_cell_viewer.py -v
 ```
 
 The Tkinter display is not covered — it needs a desktop session.
+
+### Testing --live without a vehicle
+
+`--live` opens a real CAN channel, so no automated test reaches it.
+[`../playback/coda_fake_cells.py`](../playback/coda_fake_cells.py) broadcasts
+synthetic cell sweeps for that purpose — run it on one dongle and the viewer on
+another wired back to back, or both over a Linux vcan pair. See
+[`../playback/README.md`](../playback/README.md).
+
+```bash
+python playback/coda_fake_cells.py --interface pcan --channel PCAN_USBBUS1 --low-cell 56
+python cell_viewer/cell_viewer.py --live --interface kvaser --channel 0 --gui
+```
+
+Verified this way on a Kvaser Leaf Light v2 / PCAN-USB FD bench link: cell
+sweeps transmitted on one dongle and read back through `--live` on the other
+decoded identically, with the injected low cell recovered exactly.

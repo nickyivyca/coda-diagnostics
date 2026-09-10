@@ -17,8 +17,10 @@ import pytest
 HERE = os.path.dirname(os.path.abspath(__file__))
 VIEWER_DIR = os.path.join(HERE, "cell_viewer")
 sys.path.insert(0, VIEWER_DIR)
+sys.path.insert(0, os.path.join(HERE, "playback"))
 
 import cell_viewer as cv  # noqa: E402
+import coda_fake_cells as fake  # noqa: E402
 import layout  # noqa: E402
 
 CHANNEL = "vcan0"
@@ -166,3 +168,41 @@ def test_cli_render_end_to_end(tmp_path):
         capture_output=True, text=True, timeout=120)
     assert r.returncode == 0, r.stdout + r.stderr
     assert out.exists()
+
+
+# ------------------------------------------------- the fake cell broadcaster
+# playback/coda_fake_cells.py is the transmit side used to exercise --live
+# against real hardware. It builds frames independently of layout.py, so these
+# guard against the two drifting apart.
+def test_fake_cells_round_trips_through_the_decoder():
+    mv = fake.pack_profile(low_cell=56)
+    state = cv.PackState()
+
+    class _F:
+        pass
+
+    published = False
+    for can_id, data in fake.frames_for(mv):
+        f = _F()
+        f.timestamp, f.arbitration_id, f.data = 0.0, can_id, data
+        published = state.update(f) or published
+
+    assert published, "no sweep published; 0x019 should publish"
+    assert state.complete
+    for cell, millivolts in mv.items():
+        assert state.volts[cell] == pytest.approx(millivolts / 1000.0)
+
+
+def test_fake_cells_low_cell_becomes_the_minimum():
+    mv = fake.pack_profile(low_cell=56)
+    assert min(mv, key=mv.get) == 56
+    assert mv[56] == 3243
+
+
+def test_fake_cells_covers_every_cell_exactly_once():
+    frames = fake.frames_for(fake.pack_profile())
+    assert len(frames) == 26
+    seen = [cell
+            for can_id, data in frames
+            for cell, _volts in layout.decode_frame(can_id, data)]
+    assert sorted(seen) == list(range(1, N_CELLS + 1))
