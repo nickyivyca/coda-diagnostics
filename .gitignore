@@ -1,0 +1,13 @@
+# Local editor / agent settings
+.claude/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Test / capture scratch output
+*.log
