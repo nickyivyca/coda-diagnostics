@@ -32,10 +32,12 @@ Typical use:
 from __future__ import annotations
 
 import argparse
+import datetime
 import glob
 import heapq
 import json
 import os
+import re
 import sys
 import time
 from collections import Counter, deque
@@ -173,18 +175,90 @@ def detect_cell_channel(paths, sample=400000):
     return counts.most_common(1)[0][0]
 
 
+# candump's CONSOLE output, which is not the same as its log format:
+#     (2026-09-09 23:33:41.381427)  can0  000   [8]  FF FF FF FF FF FF FF FF
+# python-can reads only the log format, "(1234567890.123456) can0 000#FFFF..",
+# and fails on this one with an unpack error, so it is handled here.
+_CONSOLE_RE = re.compile(
+    r"^\s*\((?P<ts>[^)]+)\)\s+"              # (timestamp)
+    r"(?P<iface>\S+)\s+"                     # can0
+    r"(?P<id>[0-9A-Fa-f]+)\s+"               # 000
+    r"\[(?P<dlc>\d+)\]\s*"                   # [8]
+    r"(?P<data>(?:[0-9A-Fa-f]{2}\s*)*)$"     # FF FF ...
+)
+
+
+def _console_timestamp(text):
+    """-> epoch seconds, from either a date-time or a bare number."""
+    text = text.strip()
+    for fmt in ("%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M:%S"):
+        try:
+            return datetime.datetime.strptime(text, fmt).timestamp()
+        except ValueError:
+            pass
+    try:
+        return float(text)          # absolute epoch, or a relative offset
+    except ValueError:
+        return None
+
+
+def _read_console(path):
+    """Yield Messages from a candump console capture."""
+    with open(path, "r", encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            m = _CONSOLE_RE.match(line)
+            if not m:
+                continue
+            ts = _console_timestamp(m.group("ts"))
+            if ts is None:
+                continue
+            dlc = int(m.group("dlc"))
+            data = bytes.fromhex(m.group("data").replace(" ", ""))
+            arb = m.group("id")
+            yield can.Message(timestamp=ts, arbitration_id=int(arb, 16),
+                              data=data[:dlc], dlc=dlc,
+                              is_extended_id=len(arb) > 3,
+                              channel=m.group("iface"))
+
+
+def _looks_like_console(path, sniff=40):
+    """True if the first readable line is candump console output."""
+    try:
+        with open(path, "r", encoding="utf-8", errors="replace") as fh:
+            for _ in range(sniff):
+                line = fh.readline()
+                if not line:
+                    break
+                if line.strip():
+                    return bool(_CONSOLE_RE.match(line))
+    except OSError:
+        pass
+    return False
+
+
 def read_log(path):
     """Yield python-can Messages from one log file.
 
-    can.LogReader dispatches on the file extension, so candump .log, Vector
-    .asc and .blf all work.  Messages without a timestamp are skipped rather
-    than allowed to poison the sweep timeline.
+    candump console captures are read directly; everything else goes to
+    can.LogReader, which dispatches on the extension and so covers candump
+    .log, Vector .asc, SavvyCAN .csv and .blf.  Messages without a timestamp
+    are skipped rather than allowed to poison the sweep timeline.
     """
-    with can.LogReader(path) as reader:
-        for msg in reader:
-            if msg.timestamp is None:
-                continue
-            yield msg
+    if _looks_like_console(path):
+        yield from _read_console(path)
+        return
+    try:
+        with can.LogReader(path) as reader:
+            for msg in reader:
+                if msg.timestamp is None:
+                    continue
+                yield msg
+    except ValueError as exc:
+        raise SystemExit(
+            "could not parse %s as a CAN log (%s).\n"
+            "Supported: candump console output, candump .log, Vector .asc, "
+            "SavvyCAN .csv and .blf. A .log in some other format -- BUSMASTER, "
+            "for instance -- has to be converted first." % (path, exc))
 
 
 def frame_stream(paths):

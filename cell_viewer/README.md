@@ -71,8 +71,23 @@ python cell_viewer/cell_viewer.py --log capture.log --gui --speed 20
 python cell_viewer/cell_viewer.py --live --gui
 ```
 
-Logs are read through `can.LogReader`, so candump `.log`, Vector `.asc` and
-`.blf` all work.
+### Log formats
+
+candump **console** output is read directly:
+
+```
+ (2026-09-09 23:33:41.381427)  can0  000   [8]  FF FF FF FF FF FF FF FF
+```
+
+Everything else goes to `can.LogReader`, which dispatches on the file
+extension and covers candump `.log` (`(1234567890.123456) can0 000#FFFF..`),
+Vector `.asc`, SavvyCAN `.csv` and `.blf`.
+
+Note the two candump forms are different files: the console form above is what
+you get from `candump` on screen, the `.log` form is what `candump -l` writes.
+Both carry a `.log` extension in practice, so the format is detected from the
+content rather than the name. A `.log` in some other format entirely --
+BUSMASTER, say -- is reported as such rather than crashing.
 
 ### Options
 
