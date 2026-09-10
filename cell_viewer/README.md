@@ -65,8 +65,9 @@ python cell_viewer/cell_viewer.py --log capture.log
 # Live from a bus (dongle auto-detected, same detection as read_dtcs_coda.py)
 python cell_viewer/cell_viewer.py --live
 
-# Faster replay, and stop at the end instead of looping
-python cell_viewer/cell_viewer.py --log capture.log --speed 20 --no-loop
+# Faster replay, stop at the end instead of looping, and show the
+# original's second window (min/max over time)
+python cell_viewer/cell_viewer.py --log capture.log --speed 20 --no-loop --scope
 
 # What is in a capture, and which instants are worth looking at
 python cell_viewer/cell_viewer.py --log capture.log --scan
@@ -111,9 +112,10 @@ BUSMASTER, say -- is reported as such rather than crashing.
 | `--at T` | Instant to render: seconds, or `demo` / `max-spread` / `max-cell` / `min-cell`. `demo` prefers the widest-spread sweep whose extreme cell actually moves between the two mappings, and falls back to plain widest-spread when no sweep has one. |
 | `--partial` | Keep sweeps missing some of the 104 cells, for a capture that starts or ends mid-pack. Un-seen cells render as their `NN_k` placeholder and the Maximum/Minimum readouts describe only the cells present. Without it such a capture yields nothing. |
 | `--render OUT.png` | Write a PNG (needs Pillow). |
-| `--render-scope OUT.png` | Write the second window (min/max history). |
+| `--render-scope OUT.png` | Write the second window (min/max history) as an image. Independent of `--scope`, which is about the live window. |
 | `--gui` | Tkinter display. The default when no other action is given; pass it explicitly to get the display *and* a `--scan` or `--render`. |
 | `--no-loop` | Stop at the end of the log instead of looping. |
+| `--scope` | Also open the original's second window, plotting each sweep's min and max over time. Off by default. |
 | `--cache FILE` | Write or reuse per-sweep snapshots so later renders are instant. `--refresh` forces a rescan. |
 | `--scale N` | PNG scale factor. `2` matches the DPI of the original tool's screenshots. |
 | `--scope-mode fixed\|original` | See below. |
@@ -125,12 +127,18 @@ Everything else is reproduced as-is, including the per-sweep max/min semantics
 one sweep rather than an all-time extreme), the `str(mv/1000)` label text, the
 `NN_k` placeholder for cells not yet seen, and the second window's typo'd title.
 
-1. **The second window's scaling is fixed, not reproduced** (`--scope-mode
-   fixed`, the default). The original scales that plot with a height belonging
-   to the *first* window, on a canvas half as tall; solving for a visible point
-   gives V > 3.4, so for a resting LFP pack it is permanently blank. The
-   default here autoranges to the data. `--scope-mode original` reproduces the
-   broken scaling exactly.
+1. **The second window is off by default, and its scaling is fixed.** The
+   original always opened a second window ("Intergrated Cell Voltage Display"
+   — the typo is the original's) plotting each sweep's min and max over time.
+   Here it opens only with `--scope`: it is another window to manage for
+   something the grid's own Maximum/Minimum readouts already show.
+
+   When shown, its scaling is also fixed rather than reproduced. The original
+   scales that plot with a height belonging to the *first* window, on a canvas
+   half as tall; solving for a visible point gives V > 3.4, so on a resting
+   LFP pack it is permanently blank — the window opens and simply never draws
+   anything. `--scope-mode fixed` (the default) autoranges to the data;
+   `--scope-mode original` reproduces the broken scaling exactly.
 2. **`app` is available but not the default** — see above.
 3. **No Kvaser `canlib32.dll`.** Live capture goes through python-can, so the
    tool is not tied to Windows or to one vendor's dongles — see *Why the

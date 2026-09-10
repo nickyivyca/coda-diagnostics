@@ -556,8 +556,14 @@ def render_scope_png(history, out_path, scale=2, mode="fixed"):
 
 
 # --------------------------------------------------------------------- gui
-def run_gui(source, mapping, speed=1.0, scope_mode="fixed"):
-    """Real tk widgets, placed from layout.build() -- the faithful renderer."""
+def run_gui(source, mapping, speed=1.0, scope_mode="fixed", scope=False):
+    """Real tk widgets, placed from layout.build() -- the faithful renderer.
+
+    The original opened a second window plotting per-sweep min/max over
+    time.  It is off here unless *scope* is set: it is a separate window to
+    manage for something the grid's own Maximum/Minimum readouts already
+    say, and the original's own scaling left it blank anyway.
+    """
     import tkinter as tk
 
     try:
@@ -602,16 +608,20 @@ def run_gui(source, mapping, speed=1.0, scope_mode="fixed"):
              width=layout.CELL_WIDTH_CHARS, fg=layout.MIN_COLORS["fg"],
              bg=layout.MIN_COLORS["bg"]).grid(row=r_min, column=1)
 
-    scope = tk.Toplevel(root)
-    scope.title(layout.SCOPE_TITLE)
     sw, sh = layout.SCOPE_WINDOW
-    scope.geometry("%dx%d+%d+%d" % (sw, sh, layout.SCOPE_POS[0],
-                                    layout.SCOPE_POS[1]))
-    canvas = tk.Canvas(scope, width=sw, height=sh, bg="white")
-    canvas.pack()
     hist = deque(maxlen=layout.SCOPE_SAMPLES)
+    canvas = None
+    if scope:
+        scope_win = tk.Toplevel(root)
+        scope_win.title(layout.SCOPE_TITLE)
+        scope_win.geometry("%dx%d+%d+%d" % (sw, sh, layout.SCOPE_POS[0],
+                                            layout.SCOPE_POS[1]))
+        canvas = tk.Canvas(scope_win, width=sw, height=sh, bg="white")
+        canvas.pack()
 
     def draw_scope():
+        if canvas is None:
+            return
         canvas.delete("all")
         if not hist:
             return
@@ -749,6 +759,9 @@ def main(argv=None):
                           "is given)")
     act.add_argument("--no-loop", dest="loop", action="store_false",
                      help="stop at the end of the log instead of looping")
+    act.add_argument("--scope", action="store_true",
+                     help="also open the original's second window, plotting "
+                          "per-sweep min/max over time")
 
     opt = ap.add_argument_group("options")
     opt.add_argument("--mapping", default="corrected",
@@ -781,7 +794,7 @@ def main(argv=None):
                      "log, so pass --log for those")
         run_gui(live_source(args.channel, args.interface, args.bitrate,
                             partial=args.partial),
-                gui_mapping, args.speed, args.scope_mode)
+                gui_mapping, args.speed, args.scope_mode, scope=args.scope)
         return 0
 
     sweeps = load_or_collect(args)
@@ -794,7 +807,7 @@ def main(argv=None):
 
     if show_gui:
         run_gui(sweep_source(sweeps, loop=args.loop),
-                gui_mapping, args.speed, args.scope_mode)
+                gui_mapping, args.speed, args.scope_mode, scope=args.scope)
     return 0
 
 
