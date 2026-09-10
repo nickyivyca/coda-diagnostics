@@ -30,7 +30,9 @@ FAKE_CAR = os.path.join(os.path.dirname(__file__), "playback", "coda_fake_car.py
 READER = os.path.join(os.path.dirname(__file__), "read_dtcs_coda.py")
 IFACE = "socketcan"
 CHAN = "vcan0"
-READER_TIMEOUT = 30  # seconds — 8 modules × ~5 s timeout each in the worst case
+READER_TIMEOUT = 60  # seconds -- 8 modules x ~5 s timeout each is ~40 s;
+                     # a single-module run measures ~30.2 s, so 30 was a
+                     # coin-flip failure. 60 leaves real headroom.
 
 
 def _run_reader():

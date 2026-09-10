@@ -11,3 +11,4 @@ venv/
 
 # Test / capture scratch output
 *.log
+.pytest_cache/
