@@ -286,7 +286,7 @@ def main():
     p.add_argument("--gateway", help="Clear Gateway DTCs", action="store_true")
     p.add_argument("--dcdc", help="Clear DCDC DTCs", action="store_true")
     p.add_argument("--eps", help="Clear EPS DTCs (requires ignition cycle)", action="store_true")
-    p.add_argument("--accompressor", help="Clear AC Compressor DTCs", action="store_true")
+    p.add_argument("--accompressor", help="Clear AC-Compressor DTCs", action="store_true")
     p.add_argument("--all", help="Clear all modules", action="store_true")
 
     p.add_argument("--debug", help="Enable script debug logging", action="store_true")
