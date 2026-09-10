@@ -206,3 +206,40 @@ def test_fake_cells_covers_every_cell_exactly_once():
             for can_id, data in frames
             for cell, _volts in layout.decode_frame(can_id, data)]
     assert sorted(seen) == list(range(1, N_CELLS + 1))
+
+
+# ------------------------------------------------------------ replay source
+def test_sweep_source_loops_by_default(tmp_path):
+    """A short capture should keep playing rather than stopping."""
+    log = tmp_path / "full.log"
+    _write_log(log, set(range(1, N_CELLS + 1)))
+    sweeps = cv.collect_sweeps([str(log)], progress=False)
+    assert len(sweeps) == 1
+
+    src = cv.sweep_source(sweeps)
+    pulled = [next(src) for _ in range(5)]      # would StopIteration if not looping
+    assert len(pulled) == 5
+    assert all(p[0] == pulled[0][0] for p in pulled)
+    src.close()
+
+
+def test_sweep_source_no_loop_stops(tmp_path):
+    log = tmp_path / "full.log"
+    _write_log(log, set(range(1, N_CELLS + 1)))
+    sweeps = cv.collect_sweeps([str(log)], progress=False)
+    assert len(list(cv.sweep_source(sweeps, loop=False))) == len(sweeps)
+
+
+# ------------------------------------------------------------ demo fallback
+def test_demo_falls_back_when_no_even_column_extreme(tmp_path):
+    """--at demo prefers an even-column extreme but must not refuse without one."""
+    volts = {n: 3.300 for n in range(1, N_CELLS + 1)}
+    pos = layout.cell_positions("corrected")
+    odd = [n for n in volts if pos[n][1] % 2 == 1]
+    volts[odd[0]] = 3.400                       # both extremes in odd columns
+    volts[odd[1]] = 3.200
+    sweeps = [{"t": 0.0, "min": 3.200, "max": 3.400, "volts": volts}]
+
+    idx, sweep, row = cv.pick_sweep(sweeps, "demo", "corrected")
+    assert idx == 0
+    assert row["spread"] == pytest.approx(0.200)

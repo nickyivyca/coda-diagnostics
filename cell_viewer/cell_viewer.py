@@ -417,11 +417,11 @@ def pick_sweep(sweeps, at, mapping):
             cand = [i for i, r in enumerate(rows)
                     if r["max_rc"][1] % 2 == 0 or r["min_rc"][1] % 2 == 0]
             if not cand:
-                if len(rows) == 1:
-                    cand = [0]      # a single partial sweep: nothing to choose
-                else:
-                    raise SystemExit(
-                        "--at demo: no sweep has an even-column extreme")
+                # An even-column extreme is what makes the two mappings differ
+                # visibly, so "demo" prefers one -- but plenty of captures have
+                # none, and refusing to render at all would be useless.  Fall
+                # back to the widest spread, which is what demo means anyway.
+                cand = list(range(len(rows)))
             i = max(cand, key=lambda i: rows[i]["spread"])
         return i, sweeps[i], rows[i]
     try:
@@ -560,7 +560,15 @@ def run_gui(source, mapping, speed=1.0, scope_mode="fixed"):
     """Real tk widgets, placed from layout.build() -- the faithful renderer."""
     import tkinter as tk
 
-    root = tk.Tk()
+    try:
+        root = tk.Tk()
+    except tk.TclError as exc:
+        # The display is the default action, so this is the first thing a
+        # headless user hits; a bare Tcl error would not explain itself.
+        raise SystemExit(
+            "cannot open a window (%s).\n"
+            "This needs a desktop session. On a headless machine use --scan "
+            "for a summary or --render OUT.png to write an image." % exc)
     root.title("%s  [%s]" % (layout.TITLE, mapping))
     w, h = layout.WINDOW["31kWh"]
     root.geometry("%dx%d+%d+%d" % (w, h, layout.WINDOW_POS[0],
@@ -650,11 +658,20 @@ def run_gui(source, mapping, speed=1.0, scope_mode="fixed"):
     root.mainloop()
 
 
-def sweep_source(sweeps):
-    """-> generator of (volts, max, min, seconds-until-next-sweep)."""
-    for i, s in enumerate(sweeps):
-        dt = (sweeps[i + 1]["t"] - s["t"]) if i + 1 < len(sweeps) else 0.5
-        yield s["volts"], s["max"], s["min"], max(dt, 0.0)
+def sweep_source(sweeps, loop=True):
+    """-> generator of (volts, max, min, seconds-until-next-sweep).
+
+    Loops by default: a capture is usually far shorter than you want to look
+    at it for, and a display that stops after a few seconds is less useful
+    than one that keeps running.  The gap after the last sweep doubles as the
+    pause before it wraps.
+    """
+    while True:
+        for i, s in enumerate(sweeps):
+            dt = (sweeps[i + 1]["t"] - s["t"]) if i + 1 < len(sweeps) else 0.5
+            yield s["volts"], s["max"], s["min"], max(dt, 0.0)
+        if not loop:
+            return
 
 
 def live_source(channel, interface, bitrate, partial=False):
@@ -727,7 +744,11 @@ def main(argv=None):
     act.add_argument("--render", metavar="OUT.png", help="write a PNG")
     act.add_argument("--render-scope", metavar="OUT.png",
                      help="write the second (history) window as a PNG")
-    act.add_argument("--gui", action="store_true", help="live Tkinter display")
+    act.add_argument("--gui", action="store_true",
+                     help="Tkinter display (the default when no other action "
+                          "is given)")
+    act.add_argument("--no-loop", dest="loop", action="store_false",
+                     help="stop at the end of the log instead of looping")
 
     opt = ap.add_argument_group("options")
     opt.add_argument("--mapping", default="corrected",
@@ -749,26 +770,36 @@ def main(argv=None):
 
     gui_mapping = "corrected" if args.mapping == "both" else args.mapping
 
+    # The display is the default action; --scan and the renderers opt out of
+    # it, and --gui forces it back on alongside them.
+    rendering = bool(args.render or args.render_scope)
+    show_gui = args.gui or not (args.scan or rendering)
+
     if args.live:
-        if not args.gui:
-            ap.error("--live currently only drives --gui")
+        if not show_gui:
+            ap.error("--live drives the display; --scan and --render read a "
+                     "log, so pass --log for those")
         run_gui(live_source(args.channel, args.interface, args.bitrate,
                             partial=args.partial),
                 gui_mapping, args.speed, args.scope_mode)
         return 0
 
     sweeps = load_or_collect(args)
-    no_action = not (args.render or args.render_scope or args.gui)
 
-    if args.scan or no_action:
+    if args.scan:
         cmd_scan(sweeps, gui_mapping, top=args.top)
-        if no_action:
-            return 0
 
-    if args.gui:
-        run_gui(sweep_source(sweeps), gui_mapping, args.speed, args.scope_mode)
-        return 0
+    if rendering:
+        _render(args, sweeps, gui_mapping)
 
+    if show_gui:
+        run_gui(sweep_source(sweeps, loop=args.loop),
+                gui_mapping, args.speed, args.scope_mode)
+    return 0
+
+
+def _render(args, sweeps, gui_mapping):
+    """--render / --render-scope."""
     idx, sweep, row = pick_sweep(sweeps, args.at or "demo", "corrected")
     print("")
     print("rendering sweep %d at t = %.2f s   max Cell%d %.3fV   "
@@ -808,7 +839,6 @@ def main(argv=None):
         render_scope_png(hist, args.render_scope, scale=args.scale,
                          mode=args.scope_mode)
         print("  wrote %s (scope-mode=%s)" % (args.render_scope, args.scope_mode))
-    return 0
 
 
 if __name__ == "__main__":

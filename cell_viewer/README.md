@@ -58,18 +58,28 @@ against old screenshots.
 ```bash
 pip install -r ../requirements.txt
 
+# Replay a capture in the display. This is the default -- it loops until
+# you close the window.
+python cell_viewer/cell_viewer.py --log capture.log
+
+# Live from a bus (dongle auto-detected, same detection as read_dtcs_coda.py)
+python cell_viewer/cell_viewer.py --live
+
+# Faster replay, and stop at the end instead of looping
+python cell_viewer/cell_viewer.py --log capture.log --speed 20 --no-loop
+
 # What is in a capture, and which instants are worth looking at
 python cell_viewer/cell_viewer.py --log capture.log --scan
 
 # Render one instant to a PNG
-python cell_viewer/cell_viewer.py --log capture.log --at demo --render grid.png
-
-# Replay a capture in the Tkinter window
-python cell_viewer/cell_viewer.py --log capture.log --gui --speed 20
-
-# Live from a bus (dongle auto-detected, same detection as read_dtcs_coda.py)
-python cell_viewer/cell_viewer.py --live --gui
+python cell_viewer/cell_viewer.py --log capture.log --render grid.png
 ```
+
+**The display is the default action.** `--scan`, `--render` and
+`--render-scope` opt out of it; add `--gui` alongside them to get both. A log
+replay **loops** so a short capture keeps playing; `--no-loop` stops at the end.
+On a headless machine the display cannot open, and the tool says so and points
+at `--scan` / `--render` rather than failing with a Tcl error.
 
 ### Log formats
 
@@ -98,11 +108,12 @@ BUSMASTER, say -- is reported as such rather than crashing.
 | `--interface`, `--channel`, `--bitrate` | Hardware for `--live`. Interface and channel auto-detect when unset. |
 | `--channel` (with `--log`) | Which recorded channel carries C CAN. By default it is found **by content** — the channel carrying IDs `0x000`–`0x019` — never by channel name, which moves with dongle insertion order. |
 | `--mapping corrected\|app\|both` | Cell placement. `both` writes `<out>_app.png` and `<out>_corrected.png`. Default `corrected`. |
-| `--at T` | Instant to render: seconds, or `demo` / `max-spread` / `max-cell` / `min-cell`. `demo` picks the widest-spread sweep whose extreme cell actually moves between the two mappings. |
+| `--at T` | Instant to render: seconds, or `demo` / `max-spread` / `max-cell` / `min-cell`. `demo` prefers the widest-spread sweep whose extreme cell actually moves between the two mappings, and falls back to plain widest-spread when no sweep has one. |
 | `--partial` | Keep sweeps missing some of the 104 cells, for a capture that starts or ends mid-pack. Un-seen cells render as their `NN_k` placeholder and the Maximum/Minimum readouts describe only the cells present. Without it such a capture yields nothing. |
 | `--render OUT.png` | Write a PNG (needs Pillow). |
 | `--render-scope OUT.png` | Write the second window (min/max history). |
-| `--gui` | Live Tkinter display. |
+| `--gui` | Tkinter display. The default when no other action is given; pass it explicitly to get the display *and* a `--scan` or `--render`. |
+| `--no-loop` | Stop at the end of the log instead of looping. |
 | `--cache FILE` | Write or reuse per-sweep snapshots so later renders are instant. `--refresh` forces a rescan. |
 | `--scale N` | PNG scale factor. `2` matches the DPI of the original tool's screenshots. |
 | `--scope-mode fixed\|original` | See below. |
