@@ -597,12 +597,18 @@ def live_source(channel, interface, bitrate, partial=False):
 
     bus = can.Bus(channel=channel, interface=interface, bitrate=bitrate)
     state = PackState()
-    while True:
-        msg = bus.recv(1.0)
-        if msg is None:
-            continue
-        if state.update(msg) and (state.complete or partial):
-            yield state.snapshot(), state.max_v, state.min_v, 0.0
+    # The generator is normally abandoned rather than exhausted (the GUI just
+    # stops pulling), so shut the bus down on close/GC as well as on error --
+    # a Kvaser channel left open warns and stays claimed until the process dies.
+    try:
+        while True:
+            msg = bus.recv(1.0)
+            if msg is None:
+                continue
+            if state.update(msg) and (state.complete or partial):
+                yield state.snapshot(), state.max_v, state.min_v, 0.0
+    finally:
+        bus.shutdown()
 
 
 # --------------------------------------------------------------------- main
