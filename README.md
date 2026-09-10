@@ -19,9 +19,11 @@ Does not support:
 
 [`cell_viewer/`](cell_viewer/) renders all 104 pack cell voltages onto a picture
 of the pack, from a CAN log or a live bus. It is a rebuild of the original
-`Cell_Voltage_Display.exe` tool that fixes the cell placement -- that one puts
-44 of 104 cells in the wrong physical position. See
-[`cell_viewer/README.md`](cell_viewer/README.md).
+`Cell_Voltage_Display.exe` tool, which is a Windows executable tied to Kvaser
+hardware; this one runs wherever Python and python-can do and works with any
+dongle they support, the same range as the rest of this repo. It also fixes the
+cell placement -- the original puts 44 of 104 cells in the wrong physical
+position. See [`cell_viewer/README.md`](cell_viewer/README.md).
 
 Note this reads the BMS's **C CAN** broadcast (IDs 0x000-0x019) and so needs a
 physical tap on that bus, unlike `read_cell_voltages_and_temps.py`, which asks

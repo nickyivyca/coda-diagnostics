@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 r"""Coda cell voltage display -- rebuild of Cell_Voltage_Display.exe.
 
-Same visual baseline as the original tool, but driven by python-can and
-able to draw either the original's cell placement ("app") or the corrected
-physical one ("corrected").  The original places 44 of 104 cells in the wrong
-physical position; see README.md for the mapping and the deliberate deviations.
+Same visual baseline as the original tool, but portable: the original is a
+Windows executable bound to Kvaser's canlib32.dll, whereas this runs wherever
+Python and python-can do and talks to any dongle python-can supports.  Reading
+a log needs no dongle at all.
+
+It also draws either the original's cell placement ("app") or the corrected
+physical one ("corrected") -- the original puts 44 of 104 cells in the wrong
+physical position.  See README.md for the mapping and the deliberate
+deviations.
 
 Reads the 26 cell-voltage frames the BMS broadcasts on C CAN (0x000-0x019),
 four 16-bit big-endian millivolt values per frame.  This is the BMS's own

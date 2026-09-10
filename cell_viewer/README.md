@@ -30,9 +30,21 @@ frozen for 14 seconds is the BMS, not this tool.
 
 ## Why the rebuild exists
 
-The original tool decodes CAN correctly but places **44 of 104 cells in
-the wrong physical position**. It lays every module out in the same direction,
-whereas the pack boustrophedons — it snakes back and forth. The corrected rule
+**Portability.** The original is a Windows executable bound to Kvaser's
+`canlib32.dll` — one operating system, one vendor's dongles. This runs
+anywhere Python and python-can run (Windows, Linux, macOS) and talks to any
+dongle python-can supports: Kvaser, PCAN, Ixxat, gs_usb / candleLight,
+socketcan, and the rest. That is the same hardware range the other tools in
+this repo cover, so one dongle now serves the whole repo instead of the cell
+display needing its own. Reading a log needs no dongle and no vehicle at all.
+
+Verified across both: Windows driving a Kvaser Leaf Light v2 and a PCAN-USB FD,
+and Linux over socketcan and vcan.
+
+**A mapping fix**, as a second benefit. The original tool decodes CAN correctly
+but places **44 of 104 cells in the wrong physical position**. It lays every
+module out in the same direction, whereas the pack boustrophedons — it snakes
+back and forth. The corrected rule
 is that **even-numbered display columns are mirrored top-to-bottom within their
 own module**. No cell ever changes module or column; only its row within its
 module moves.
@@ -94,8 +106,9 @@ one sweep rather than an all-time extreme), the `str(mv/1000)` label text, the
    default here autoranges to the data. `--scope-mode original` reproduces the
    broken scaling exactly.
 2. **`app` is available but not the default** — see above.
-3. **No Kvaser `canlib32.dll`.** Live capture goes through python-can; log
-   replay needs no hardware at all.
+3. **No Kvaser `canlib32.dll`.** Live capture goes through python-can, so the
+   tool is not tied to Windows or to one vendor's dongles — see *Why the
+   rebuild exists* above. Log replay needs no hardware at all.
 
 ## Files
 
