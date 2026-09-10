@@ -18,9 +18,9 @@ Does not support:
 ## Cell voltage display
 
 [`cell_viewer/`](cell_viewer/) renders all 104 pack cell voltages onto a picture
-of the pack, from a CAN log or a live bus. It is a rebuild of the third-party
-`Cell_Voltage_Display.exe` that fixes the cell placement -- the original puts 44
-of 104 cells in the wrong physical position. See
+of the pack, from a CAN log or a live bus. It is a rebuild of the original
+`Cell_Voltage_Display.exe` tool that fixes the cell placement -- that one puts
+44 of 104 cells in the wrong physical position. See
 [`cell_viewer/README.md`](cell_viewer/README.md).
 
 Note this reads the BMS's **C CAN** broadcast (IDs 0x000-0x019) and so needs a

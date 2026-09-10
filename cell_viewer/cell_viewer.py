@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 r"""Coda cell voltage display -- rebuild of Cell_Voltage_Display.exe.
 
-Same visual baseline as the original vendor tool, but driven by python-can and
+Same visual baseline as the original tool, but driven by python-can and
 able to draw either the original's cell placement ("app") or the corrected
 physical one ("corrected").  The original places 44 of 104 cells in the wrong
 physical position; see README.md for the mapping and the deliberate deviations.
@@ -48,7 +48,7 @@ SWEEP_IDS = list(layout.CELL_FRAME_IDS)
 LAST_ID = SWEEP_IDS[-1]          # 0x19 -- the frame the original publishes on
 
 # Logical widget geometry.  A tk Label(width=12, font=("courier new",14,"bold"))
-# measures ~139 x 28 px; the owner's screenshots were captured at 2x DPI.
+# measures ~139 x 28 px; the original tool was screenshotted at 2x DPI.
 CELL_W, CELL_H = 139, 28
 FONT_PX = 19                     # 14 pt at 96 dpi
 ROOT_BG = (240, 240, 240)        # Windows SystemButtonFace
@@ -655,11 +655,11 @@ def main(argv=None):
                      choices=["corrected", "app", "both"],
                      help="cell placement (default: corrected)")
     opt.add_argument("--scale", type=int, default=2,
-                     help="PNG scale factor; 2 matches the owner's screenshots")
+                     help="PNG scale factor; 2 matches the original tool's screenshots")
     opt.add_argument("--scope-mode", default="fixed",
                      choices=["fixed", "original"],
-                     help="original reproduces the vendor tool's broken "
-                          "scaling; fixed autoranges (default)")
+                     help="'original' reproduces the original tool's broken "
+                          "scaling; 'fixed' autoranges (default)")
     opt.add_argument("--speed", type=float, default=1.0, help="GUI replay speed")
     opt.add_argument("--top", type=int, default=5, help="rows per --scan table")
     args = ap.parse_args(argv)

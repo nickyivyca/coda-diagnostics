@@ -1,10 +1,16 @@
 # cell_viewer — Coda pack cell voltage display
 
 Renders all 104 cell voltages onto a picture of the pack, from a CAN log or a
-live bus. A rebuild of the third-party `Cell_Voltage_Display.exe`, keeping its
+live bus. A rebuild of the original `Cell_Voltage_Display.exe` tool, keeping its
 exact visual baseline but fixing the cell placement.
 
-<!-- Add a screenshot here once one is captured on hardware. -->
+![Cell voltage grid](sample-charge.png)
+
+A real capture: the pack near the end of a charge to 100%. Cell82 has run up to
+3.782 V while the rest of the pack sits around 3.38 V and the lowest cell is at
+3.372 V -- a 410 mV spread. Each block of colour is one module; the four blank
+squares at top-left and bottom-left are where columns 1 and 2 hold five cells
+instead of six. Rendered with `--mapping corrected --scale 2`.
 
 ## Where the data comes from
 
@@ -24,7 +30,7 @@ frozen for 14 seconds is the BMS, not this tool.
 
 ## Why the rebuild exists
 
-The original vendor tool decodes CAN correctly but places **44 of 104 cells in
+The original tool decodes CAN correctly but places **44 of 104 cells in
 the wrong physical position**. It lays every module out in the same direction,
 whereas the pack boustrophedons — it snakes back and forth. The corrected rule
 is that **even-numbered display columns are mirrored top-to-bottom within their

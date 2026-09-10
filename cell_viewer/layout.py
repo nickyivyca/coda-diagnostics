@@ -14,7 +14,7 @@ Two mappings are provided:
 Only the within-module cell ORDER differs.  Module membership, column position
 and colour are the same in both -- no cell ever changes module or column.
 
-Graphics constants below are reproduced from the original vendor tool
+Graphics constants below are reproduced from the original tool
 (Cell_Voltage_Display.exe), so the rebuild is visually identical to it.
 """
 
